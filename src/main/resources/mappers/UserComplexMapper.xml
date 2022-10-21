@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.day.examp3.mapper.UserMapper">
+    <resultMap id="shoppingList" type="map" >
+        <result property="productId" column="product_id"/>
+        <result property="picture" column="picture"/>
+        <result property="name" column="name"/>
+        <result property="fixedPrice" column="fixed_price"/>
+        <result property="category"  column="catalog"/>
+    </resultMap>
+    <select id="getUserShoppingList" resultMap="shoppingList" >
+        select p.product_id,
+               p.picture,
+               p.name,
+               p.fixed_price,
+               p.catalog
+        from lmonkey_product p inner join lmonkey_user_shopping_list sl
+        where sl.user_id = #{uid} and sl.product_id=p.product_id
+    </select>
+</mapper>

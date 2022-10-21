@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>墙式壁挂</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/proList.css"/>
+</head>
+<body><!------------------------------head------------------------------>
+<div th:replace="~{common/usernavbar::top}"></div>
+<!-----------------banner------------------------------->
+<div class="banner"><a href="#"><img src="/static/img/temp/banner2.jpg"/></a></div>
+<!-----------------address------------------------------->
+<div class="address">
+    <div class="wrapper clearfix"><a href="index.html">首页</a><span>/</span><a href="paint.html" class="on">墙式壁挂</a>
+    </div>
+</div><!-----------------paintCon------------------------------->
+<div class="paintCon">
+    <section class="wrapper"><h3><img src="/static/img/temp/tit01.jpg"></h3><img src="/static/img/temp/paint01.jpg"/>
+        <div class="paintList">
+            <tr th:each="modern:${products_modern}">
+            <a th:href="@{/proDetail/{pid}(pid=${modern.getProductId()})}">
+                <dl>
+                    <dt><img th:src="${modern.getPicture()}"></dt>
+                    <dd th:text="${modern.getName()}" ></dd>
+                    <dd th:text="${modern.getFixedPrice()}"></dd>
+                </dl>
+                </a>
+            </tr>
+        </div>
+    </section>
+    <section class="wrapper"><h3><img src="/static/img/temp/tit02.jpg"></h3><img src="/static/img/temp/paint02.jpg"/>
+        <div class="paintList">
+            <tr th:each="european:${products_european}">
+                <a th:href="@{/proDetail/{pid}(pid=${european.getProductId()})}">
+                    <dl>
+                        <dt><img th:src="${european.getPicture()}"></dt>
+                        <dd th:text="${european.getName()}"></dd>
+                        <dd th:text="${european.getFixedPrice()}" ></dd>
+                    </dl>
+                </a>
+            </tr>
+        </div>
+    </section>
+    <section class="wrapper"><h3><img src="/static/img/temp/tit03.jpg"></h3>
+        <div class="paintList third">
+            <tr th:each="american:${products_american}" th:if="${americanStat.first}">
+                <p th:if="${americanStat.first}" ><a th:href="@{/proDetail/{pid}(pid=${american.getProductId()})}" th:if="${americanStat.first}" >
+                    <img th:src="${american.getPicture()}" th:if="${americanStat.first}"/></a></p>
+            </tr>
+                <div class="sec">
+                    <tr th:each="american:${products_american}" th:if="${americanStat.count} >=2 and ${americanStat.count} <=5">
+                    <a th:href="@{/proDetail/{pid}(pid=${american.getProductId()})}" >
+                        <dl>
+                            <dt><img th:src="${american.getPicture()}"></dt>
+                            <dd th:text="${american.getName()}" ></dd>
+                            <dd th:text="${american.getFixedPrice()}"></dd>
+                        </dl>
+                    </a>
+                    </tr>
+                </div>
+            </tr>
+        </div>
+    </section>
+    <section class="wrapper"><h3><img src="/static/img/temp/tit03.jpg"></h3>
+        <div class="paintList third">
+            <tr th:each="american:${products_american2}" th:if="${americanStat.count} <=2">
+                <p><a th:href="@{/proDetail/{pid}(pid=${american.getProductId()})}" >
+                    <img th:src="${american.getPicture()}"/></a></p>
+            </tr>
+            <div class="sec">
+                <tr th:each="american:${products_american2}" th:if="${americanStat.count} >=3 and ${americanStat.count} <=5">
+                    <a th:href="@{/proDetail/{pid}(pid=${american.getProductId()})}" >
+                        <dl>
+                            <dt><img th:src="${american.getPicture()}"></dt>
+                            <dd th:text="${american.getName()}" ></dd>
+                            <dd th:text="${american.getFixedPrice()}"></dd>
+                        </dl>
+                    </a>
+                </tr>
+            </div>
+            </tr>
+        </div>
+    </section>
+</div><!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<div class="msk"></div><!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/nav.js" type="text/javascript" charset="utf-8"></script>
+<!--<script src="js/pro.js" type="text/javascript" charset="utf-8"></script>--></body>
+</html>

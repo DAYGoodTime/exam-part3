@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>最家</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/idea.css"/>
+</head>
+<body><!------------------------------head------------------------------>
+<div th:replace="~{common/usernavbar::top}"></div>
+<!------------------------------idea------------------------------>
+<div class="address">
+    <div class="wrapper clearfix"><a href="index.html" class="fl">首页</a><span>/</span><a href="idea.html" class="on">创意家居</a>
+    </div>
+</div><!------------------------------imgList1------------------------------>
+<div class="imgList1">
+    <div class="wrapper">
+        <div class="box1">
+            <a href="proDetail.html" class="banner">
+            <img src="/static/img/idea1.jpg"/></a>
+            <ul>
+                <tr th:each="fashion:${fashions}" th:if="${fashionStat.count} <= 3">
+                    <li>
+                        <a th:href="@{/proDetail/{pid}(pid=${fashion.getProductId()})}">
+                            <dl>
+                                <dt><img th:src="${fashion.getPicture()}"/></dt>
+                                <dd th:text="${fashion.getName()}" ></dd>
+                                <dd th:text="'¥'+${fashion.getFixedPrice()}"></dd>
+                            </dl>
+                        </a>
+                    </li>
+                </tr>
+            </ul>
+            <ul>
+                <tr th:each="fashion:${fashions}" th:if="${fashionStat.count} >=4 and ${fashionStat.count} <=6">
+                    <li>
+                        <a th:href="@{/proDetail/{pid}(pid=${fashion.getProductId()})}">
+                            <dl>
+                                <dt><img th:src="${fashion.getPicture()}"/></dt>
+                                <dd th:text="${fashion.getName()}" ></dd>
+                                <dd th:text="'¥'+${fashion.getFixedPrice()}"></dd>
+                            </dl>
+                        </a>
+                    </li>
+                </tr>
+            </ul>
+            <ul>
+                <tr th:each="fashion:${fashions}" th:if="${fashionStat.count} >=7 and ${fashionStat.count} <=9">
+                    <li>
+                        <a th:href="@{/proDetail/{pid}(pid=${fashion.getProductId()})}">
+                            <dl>
+                                <dt><img th:src="${fashion.getPicture()}"/></dt>
+                                <dd th:text="${fashion.getName()}" ></dd>
+                                <dd th:text="'¥'+${fashion.getFixedPrice()}"></dd>
+                            </dl>
+                        </a>
+                    </li>
+                </tr>
+            </ul>
+        </div>
+        <h2><img src="/static/img/ih5.jpg"/></h2>
+        <div class="box2"><a href="proDetail.html" class="banner">
+            <img src="/static/img/idea22.jpg"/></a>
+            <ul>
+                <tr th:each="novel:${novels}" th:if="${novelStat.count} <= 4">
+                    <li>
+                        <a th:href="@{/proDetail/{pid}(pid=${novel.getProductId()})}">
+                            <dl>
+                                <dt><img th:src="${novel.getPicture()}"/></dt>
+                                <dd th:text="${novel.getName()}" ></dd>
+                                <dd th:text="'¥'+${novel.getFixedPrice()}"></dd>
+                            </dl>
+                        </a>
+                    </li>
+                </tr>
+            </ul>
+            <ul>
+                <tr th:each="novel:${novels}" th:if="${novelStat.count} >=5 and ${novelStat.count} <=8">
+                    <li>
+                        <a th:href="@{/proDetail/{pid}(pid=${novel.getProductId()})}">
+                            <dl>
+                                <dt><img th:src="${novel.getPicture()}"/></dt>
+                                <dd th:text="${novel.getName()}" ></dd>
+                                <dd th:text="'¥'+${novel.getFixedPrice()}"></dd>
+                            </dl>
+                        </a>
+                    </li>
+                </tr>
+            </ul>
+        </div>
+        <h2><img src="/static/img/ih6.jpg"/></h2>
+        <div class="box3">
+            <ul>
+                <tr th:each="life:${lifes}" th:if="${lifeStat.count} <= 4">
+                    <li>
+                        <a th:href="@{/proDetail/{pid}(pid=${life.getProductId()})}">
+                            <dl>
+                                <dt><img th:src="${life.getPicture()}"/></dt>
+                                <dd th:text="${life.getName()}" ></dd>
+                                <dd th:text="'¥'+${life.getFixedPrice()}"></dd>
+                            </dl>
+                        </a>
+                    </li>
+                </tr>
+            </ul>
+            <ul>
+                <tr th:each="life:${lifes}" th:if="${lifeStat.count} >=5 and ${lifeStat.count} <=8">
+                    <li>
+                        <a th:href="@{/proDetail/{pid}(pid=${life.getProductId()})}">
+                            <dl>
+                                <dt><img th:src="${life.getPicture()}"/></dt>
+                                <dd th:text="${life.getName()}" ></dd>
+                                <dd th:text="'¥'+${life.getFixedPrice()}"></dd>
+                            </dl>
+                        </a>
+                    </li>
+                </tr>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--返回顶部-->
+<div th:replace="~{common/usernavbar::top}"></div>
+<!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/nav.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

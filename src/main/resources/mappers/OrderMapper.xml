@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.day.examp3.mapper.OrderMapper">
+    <resultMap id="FixedOrder" type="com.day.examp3.pojo.Order">
+        <id property="orderId" column="order_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="status" column="status"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="payment" column="payment"/>
+        <result property="invoiceId" column="invoice_id"/>
+        <result property="receiveAddressId" column="receive_address_id"/>
+        <result property="amount" column="amount"/>
+        <result property="bak" column="bak"/>
+        <association property="user" javaType="com.day.examp3.pojo.User">
+            <id property="userId" column="user_id"/>
+            <result property="nickName" column="nick_name"/>
+            <result property="email" column="email"/>
+            <result property="sex" column="sex"/>
+            <result property="birth" column="birth"/>
+            <result property="cardNumber" column="card_number"/>
+            <result property="phone" column="phone"/>
+            <result property="area" column="area"/>
+            <result property="headPic" column="head_pic"/>
+        </association>
+        <association property="receiveAddress" javaType="com.day.examp3.pojo.Address">
+            <id property="receiveAddressId" column="receive_address_id"/>
+            <result property="userId" column="user_id"/>
+            <result property="receiveName" column="receive_name"/>
+            <result property="province" column="province"/>
+            <result property="address" column="address"/>
+            <result property="zipcode" column="zipcode"/>
+            <result property="mobile" column="mobile"/>
+            <result property="email" column="email"/>
+            <result property="area" column="area"/>
+            <result property="isDefault" column="is_default"/>
+        </association>
+        <collection property="productList" ofType="com.day.examp3.pojo.Product">
+            <id property="productId" column="product_id"/>
+            <result property="name" column="name"/>
+            <result property="keywords" column="keywords"/>
+            <result property="picture" column="picture"/>
+            <result property="fixedPrice" column="fixed_price"/>
+            <result property="description" column="description"/>
+            <result property="catalog" column="catalog"/>
+            <result property="storage" column="storage"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="getFullOrdersByUserId" resultMap="FixedOrder" >
+        select o.*,p.*,u.*,pay.payment
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay
+        where o.user_id = #{uid}
+    </select>
+    <select id="getFullOrdersByStatus" resultMap="FixedOrder" >
+        select o.*,p.*,u.*,pay.payment
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay
+        where o.user_id = #{uid} and o.status = #{status}
+    </select>
+</mapper>

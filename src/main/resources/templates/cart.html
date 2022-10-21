@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>购物车列表</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/proList.css"/>
+    <script>
+        var currentPid;
+        const serverhost = "http://localhost:8080";
+        var ShoppingList = [];
+
+        window.onload=function (){
+            if ($(".th").length == 0) {
+                $(".table .goOn").show()
+            }
+
+        }
+        
+        function goToOrder() {
+            let jsonobj = {"products":ShoppingList}
+            $.ajax({
+                url: serverhost + "/preCreatOrder",
+                method: "POST",
+                data: JSON.stringify(jsonobj),
+                contentType: "application/json;charset=utf-8",
+                async: true,
+                dataType:"json",
+                complete: function (data) {
+                    window.location.href = serverhost+data.responseText
+                },
+                }
+            )
+        }
+        
+        /**
+         * 获取需要操作的产品id
+         * @param pidc
+         */
+        function getPid(pidc) {
+            currentPid = pidc
+            console.log(currentPid);
+        }
+        function del() {
+            let user_id = [[${session.user_id}]]
+            console.log(user_id)
+            console.log(currentPid)
+            let object = {"user_id":user_id, "product_id":currentPid}
+            let jsonobj = JSON.stringify(object)
+            $.ajax({
+                    url: serverhost + "/delCart",
+                    method: "POST",
+                    data: jsonobj,
+                    contentType: "application/json;charset=utf-8",
+                    async: true,
+                    dataType:"json",
+                    success: function (data) {
+                        console.log(data)
+                        alert("删除成功")
+                    },
+                }
+            )
+        }
+    </script>
+</head>
+<body><!--------------------------------------cart--------------------->
+<div th:replace="~{common/usernavbar::top}"></div>
+<form id="proOrder" style="display: none" >
+    <input>
+</form>
+<div class="cart mt"><!-----------------logo------------------->
+    <!--<div class="logo"><h1 class="wrapper clearfix"><a href="index.html"><img class="fl" src="img/temp/logo.png"></a><img class="top" src="img/temp/cartTop01.png"></h1></div>-->
+    <!-----------------site------------------->
+    <div class="site"><p class=" wrapper clearfix"><span class="fl">购物车</span><img class="top"
+                                                                                   src="/static/img/temp/cartTop01.png"><a
+            th:href="@{/main}" class="fr">继续购物&gt;</a></p></div>
+    <!-----------------table------------------->
+    <div class="table wrapper">
+        <div class="tr">
+            <div>商品</div>
+            <div>单价</div>
+            <div>数量</div>
+            <div>小计</div>
+            <div>操作</div>
+        </div>
+        <tr th:each="promap:${shoppingListMap}">
+            <div class="th">
+                <div class="pro clearfix">
+                    <label class="fl"><input type="checkbox"/>
+                        <span></span></label>
+                    <a class="fl" th:href="@{/proDetail/{pid}(pid=${promap.get('productId')})}">
+                        <dl class="clearfix">
+                            <dt class="fl"><img width="120px" height="120x" th:src="${promap.get('picture')}"></dt>
+                            <div class="fl">
+                                <p th:text="${promap.get('name')}"></p>
+                                <p id="pid" style="display: none" th:text="${promap.get('productId')}" ></p>
+                                <p id="pindex" style="display: none" th:text="${promapStat.index}"></p>
+                                <p>颜色分类:</p>
+                                <p th:text="${promap.get('category')}" ></p></div>
+                        </dl>
+                    </a>
+                </div>
+                <div class="price" th:text="'￥'+${promap.get('fixedPrice')}"></div>
+                <div class="number"><p class="num clearfix">
+                    <img class="fl sub" src="/static/img/temp/sub.jpg">
+                    <span th:name="${promap.get('productId')}+'-proCount'"  class="fl">1</span>
+                    <img class="fl add" src="/static/img/temp/add.jpg"></p></div>
+                <div class="price sAll" th:text="'￥'+${promap.get('fixedPrice')}"></div>
+                <div class="price"><a class="del"
+                                      th:data-id="${promap.get('productId')}"
+                                      onclick="getPid(this.getAttribute('data-id'))" >删除</a></div>
+            </div>
+        </tr>
+        <div class="goOn">空空如也~<a th:href="@{/main}">去逛逛</a></div>
+        <div class="tr clearfix"><label class="fl"><input class="checkAll" type="checkbox"/><span></span></label>
+            <p class="fl"><a href="#">全选</a><a href="#" class="del">删除</a></p>
+            <p class="fr"><span>共<small id="sl">0</small>件商品</span><span>合计:&nbsp;<small id="all">￥0.00</small></span><a
+                href="#"   onclick="goToOrder()" class="count">结算</a></p></div>
+    </div>
+</div>
+<div class="mask"></div>
+<div class="tipDel"><p>确定要删除该商品吗？</p>
+    <p class="clearfix"><a class="fl cer" href="#">确定</a><a class="fr cancel" href="#">取消</a></p></div><!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<div th:replace="~{common/usernavbar::footer}"></div>
+<!----------------mask------------------->
+<div class="mask"></div><!-------------------mask内容------------------->
+<div class="proDets"><img class="off" src="/static/img/temp/off.jpg"/>
+    <div class="proCon clearfix">
+        <div class="proImg fr"><img class="list" src="/static/img/temp/proDet.jpg"/>
+            <div class="smallImg clearfix"><img src="/static/img/temp/proDet01.jpg" data-src="img/temp/proDet01_big.jpg"><img
+                    src="/static/img/temp/proDet02.jpg" data-src="img/temp/proDet02_big.jpg"><img src="/static/img/temp/proDet03.jpg"
+                                                                                          data-src="img/temp/proDet03_big.jpg"><img
+                    src="/static/img/temp/proDet04.jpg" data-src="img/temp/proDet04_big.jpg"></div>
+        </div>
+        <div class="fl">
+            <div class="proIntro change"><p>颜色分类</p>
+                <div class="smallImg clearfix"><p class="fl on"><img src="/static/img/temp/prosmall01.jpg" alt="白瓷花瓶+20支快乐花"
+                                                                     data-src="img/temp/proBig01.jpg"></p>
+                    <p class="fl"><img src="/static/img/temp/prosmall02.jpg" alt="白瓷花瓶+20支兔尾巴草"
+                                       data-src="img/temp/proBig02.jpg"></p>
+                    <p class="fl"><img src="/static/img/temp/prosmall03.jpg" alt="20支快乐花" data-src="img/temp/proBig03.jpg"></p>
+                    <p class="fl"><img src="/static/img/temp/prosmall04.jpg" alt="20支兔尾巴草" data-src="img/temp/proBig04.jpg"></p>
+                </div>
+            </div>
+            <div class="changeBtn clearfix"><a href="#2" class="fl"><p class="buy">确认</p></a><a href="#2" class="fr"><p
+                    class="cart">取消</p></a></div>
+        </div>
+    </div>
+</div>
+<div class="pleaseC"><p>请选择宝贝</p><img class="off" src="/static/img/temp/off.jpg"/></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/pro.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/cart.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>蜡艺香薰</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/proList.css"/>
+</head>
+<body><!------------------------------head------------------------------>
+<div th:replace="~{common/usernavbar::top}"></div>
+<!-----------------banner------------------------------->
+<div class="banner"><a href="#"><img src="/static/img/temp/perfume_Banner.jpg"/></a></div>
+<!-----------------address------------------------------->
+<div class="address">
+    <div class="wrapper clearfix"><a href="index.html">首页</a><span>/</span><a href="perfume.html" class="on">蜡艺香薰</a>
+    </div>
+</div><!-----------------paintCon------------------------------->
+<div class="paintCon">
+    <section class="wrapper"><h3><img src="/static/img/temp/perfumeTit01.jpg"></h3><img src="/static/img/temp/xxB01.jpg"/>
+        <div class="paintList">
+            <tr th:each="aromatherapy:${aromatherapys}">
+                <a th:href="@{/proDetail/{pid}(pid=${aromatherapy.getProductId()})}">
+                <dl>
+                    <dt><img th:src="${aromatherapy.getPicture()}"></dt>
+                    <dd th:text="${aromatherapy.getName()}"></dd>
+                    <dd th:text="'￥'+${aromatherapy.getFixedPrice()}"></dd>
+                </dl>
+                </a>
+            </tr>
+        </div>
+    </section>
+    <section class="wrapper"><h3><img src="/static/img/temp/perfumeTit02.jpg"></h3><img src="/static/img/temp/xxB02.jpg"/>
+        <div class="paintList">
+            <tr th:each="burner:${burners}">
+                <a th:href="@{/proDetail/{pid}(pid=${burner.getProductId()})}">
+                    <dl>
+                        <dt><img th:src="${burner.getPicture()}"></dt>
+                        <dd th:text="${burner.getName()}"></dd>
+                        <dd th:text="'￥'+${burner.getFixedPrice()}"></dd>
+                    </dl>
+                </a>
+            </tr>
+        </div>
+    </section>
+</div><!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<div class="msk"></div><!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/nav.js" type="text/javascript" charset="utf-8"></script>
+<!--<script src="js/pro.js" type="text/javascript" charset="utf-8"></script>--></body>
+</html>

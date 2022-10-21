@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>最家</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
+</head>
+<body>
+<!------------------------------head------------------------------>
+<div class="head" th:replace="~{common/usernavbar::top}"></div>
+<!-------------------------banner--------------------------->
+<div class="block_home_slider">
+    <div id="home_slider" class="flexslider">
+        <ul class="slides">
+            <li>
+                <div class="slide"><img src="/static/img/banner2.jpg"/></div>
+            </li>
+            <li>
+                <div class="slide"><img src="/static/img/banner1.jpg"/></div>
+            </li>
+        </ul>
+    </div>
+</div>
+<!------------------------------thImg------------------------------>
+<div class="thImg">
+    <div class="clearfix">
+        <a th:href="@{/flowerDer/vaseProList}"><img src="/static/img/i1.jpg"/></a>
+        <a th:href="@{/flowerDer/proList}"><img src="/static/img/i2.jpg"/></a>
+        <a th:href="@{/main}"><img src="/static/img/i3.jpg"/></a>
+    </div>
+</div><!------------------------------TODO news------------------------------>
+<div class="news">
+    <div class="wrapper"><h2><img src="/static/img/ih1.jpg"/></h2>
+        <div class="top clearfix">
+            <tr th:each="love:${products_love}" th:if="${loveStat.count} <= 3">
+                <a th:href="@{/proDetail/{pid}(pid=${love.getProductId()})}" th:if="${loveStat.first}">
+                    <img th:src="${love.getPicture()}" th:if="${loveStat.first}" />
+                <p></p></a><a th:href="@{/proDetail/{pid}(pid=${love.getProductId()})}" th:if="!${loveStat.first}">
+                <img th:src="${love.getPicture()}" th:if="!${loveStat.first}"/>
+            <p></p></a>
+            </tr>
+        </div>
+        <div class="bott clearfix">
+            <tr th:each="love:${products_love}" th:if="${loveStat.count} >= 4 and ${loveStat.count} <=6">
+            <a th:href="@{/proDetail/{pid}(pid=${love.getProductId()})}" th:if="${loveStat.count}==4">
+                <img th:src="${love.getPicture()}" th:if="${loveStat.count}==4"/>
+            <p></p></a><a th:href="@{/proDetail/{pid}(pid=${love.getProductId()})}" th:if="${loveStat.count} >=5 and ${loveStat.count} <=6">
+                <img th:src="${love.getPicture()}" th:if="${loveStat.count} >=5 and ${loveStat.count} <=6"/>
+            <p></p></a>
+            </tr>
+        </div>
+        <h2><img src="/static/img/ih2.jpg"/></h2>
+        <div class="flower clearfix tran">
+        <tr th:each="flower:${products_flower}" th:if="${flowerStat.count} <= 3">
+            <a th:href="@{/proDetail/{pid}(pid=${flower.getProductId()})}" class="clearfix"><!-- TODO 产品连接 -->
+            <dl>
+                <dt><span class="abl"></span><img th:src="${flower.getPicture()}"/><span class="abr"></span></dt>
+                <dd th:text="${flower.getName()}"></dd>
+                <dd><span th:text="'¥'+${flower.getFixedPrice()}"></span></dd>
+            </dl>
+            </a>
+        </tr>
+        </div>
+        <!--        循环3个物品-->
+        <div class="flower clearfix tran">
+            <tr th:each="flower:${products_flower}" th:if="${flowerStat.count} >=4 and ${flowerStat.count} <=6" >
+                <a th:href="@{/proDetail/{pid}(pid=${flower.getProductId()})}" class="clearfix"><!-- TODO 产品连接 -->
+                    <dl>
+                        <dt><span class="abl"></span><img th:src="${flower.getPicture()}"/><span class="abr"></span></dt>
+                        <dd th:text="${flower.getName()}"></dd>
+                        <dd><span th:text="'¥'+${flower.getFixedPrice()}"></span></dd>
+                    </dl>
+                </a>
+            </tr>
+        </div>
+    </div>
+</div>
+<!------------------------------TODO ad------------------------------>
+<a href="#" class="ad"><img src="/static/img/ib1.jpg"/></a>
+<!------------------------------TODO NORDIC WALL------------------------------>
+<div class="people">
+    <div class="wrapper">
+        <h2><img src="/static/img/ih3.jpg"/></h2>
+        <div class="pList clearfix tran">
+            <tr th:each="nordic:${products_nordic}" th:if="${nordicStat.count} <=4">
+            <a th:href="@{/proDetail/{pid}(pid=${nordic.getProductId()})}">
+            <dl>
+                <dt><span class="abl"></span><img th:src="${nordic.getPicture()}"/><span class="abr"></span></dt>
+                <dd th:text="${nordic.getName()}"></dd>
+                <dd><span th:text="'￥'+${nordic.getFixedPrice()}" ></span></dd>
+            </dl>
+            </a>
+            </tr>
+        </div>
+        <div class="pList clearfix tran">
+            <tr th:each="nordic:${products_nordic}" th:if="${nordicStat.count} >=5 and ${nordicStat.count} <=8 ">
+                <a th:href="@{/proDetail/{pid}(pid=${nordic.getProductId()})}">
+                    <dl>
+                        <dt><span class="abl"></span><img th:src="${nordic.getPicture()}"/><span class="abr"></span></dt>
+                        <dd th:text="${nordic.getName()}"></dd>
+                        <dd><span th:text="'￥'+${nordic.getFixedPrice()}" ></span></dd>
+                    </dl>
+                </a>
+            </tr>
+        </div>
+        <div class="pList clearfix tran">
+            <tr th:each="nordic:${products_nordic}" th:if="${nordicStat.count} >=9 and ${nordicStat.count} <=12">
+                <a th:href="@{/proDetail/{pid}(pid=${nordic.getProductId()})}">
+                    <dl>
+                        <dt><span class="abl"></span><img th:src="${nordic.getPicture()}"/><span class="abr"></span></dt>
+                        <dd th:text="${nordic.getName()}"></dd>
+                        <dd><span th:text="'￥'+${nordic.getFixedPrice()}" ></span></dd>
+                    </dl>
+                </a>
+            </tr>
+        </div>
+    </div>
+</div><!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<!-------------------login--------------------------><!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/nav.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/jquery.flexslider-min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">$(function () {
+    $('#home_slider').flexslider({
+        animation: 'slide',
+        controlNav: true,
+        directionNav: true,
+        animationLoop: true,
+        slideshow: true,
+        slideshowSpeed: 2000,
+        useCSS: false
+    });
+});</script>
+</body>
+</html>

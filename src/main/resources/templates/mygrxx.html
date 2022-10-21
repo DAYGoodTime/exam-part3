@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>个人信息</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/mygrxx.css"/>
+    <script>
+        var serverhost = "http://localhost:8080"
+        function uploadFile() {
+            var file = $("#file")[0].files[0];
+            var formData = new FormData();
+            formData.append("file", file);
+            console.log(formData)
+            $.ajax({
+                type:"post",
+                enctype: 'multipart/form-data',
+                url:serverhost+"/user/updateAvatar",
+                processData:false,
+                contentType:false,
+                data:formData,
+                success:function (data) {
+                    console.log(data);
+                    if(data === "200"){
+                        alert("修改成功,注意刷新缓存")
+                    }else {
+                        alert("修改失败,虽然我也不知道为什么")
+                    }
+
+                }
+            })
+        }
+
+    </script>
+</head>
+<body><!------------------------------head------------------------------>
+<div th:replace="~{common/usernavbar::top}"></div>
+<!------------------------------idea------------------------------>
+<div class="address mt">
+    <div class="wrapper clearfix"><a href="index.html" class="fl">首页</a><span>/</span><a href="mygxin.html" class="on">个人信息</a>
+    </div>
+</div><!------------------------------Bott------------------------------>
+<div class="Bott">
+    <div class="wrapper clearfix">
+        <div th:replace="~{common/usernavbar::user-left-navbar(active='mygrxx')}"></div>
+        <div class="you fl"><h2>个人信息</h2>
+            <div class="gxin">
+                <div class="tx"><a href="#"><img height="92px" width="92px" th:src="${session.user_img}"/>
+                    <p id="avatar">修改头像</p></a></div>
+                <div class="xx"><h3 class="clearfix"><strong class="fl">基础资料</strong><a href="#" class="fr" id="edit1">编辑</a>
+                </h3>
+                    <div th:text="'姓名:'+${user.getNickName()}"></div>
+                    <div th:text="'生日:'+${#dates.format(user.getBirthDate(),'yyyy-MM-dd')}"></div>
+                    <div th:text="'性别:'+${user.getSex()}"></div>
+                    <h3>高级设置</h3><!--<div><span class="fl">银行卡</span><a href="#" class="fr">管理</a></div>-->
+                    <div><span class="fl" th:text="'账号地区:'+${user.getArea()}"></span><a href="#" class="fr" id="edit2">修改</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!--遮罩-->
+<div class="mask"></div>
+<!--编辑弹框-->
+<div class="bj">
+    <div class="clearfix"><a href="#" class="fr gb"><img src="/static/img/icon4.png"/></a></div>
+    <h3>编辑基础资料</h3>
+    <form th:action="@{/user/updateBaseInfo}" method="post">
+        <p><label>姓名：</label><input type="text" name="username" th:value="${user.nickName}"/></p>
+        <p><label>生日：</label><input name="birth" type="text" th:value="${#dates.format(user.birth, 'yyyy-MM-dd')}"/></p>
+        <p><label>性别：</label><span><input type="radio" name="sex" value="男" checked/>男</span><span><input value="女" type="radio"/>女</span></p>
+        <div class="bc"><input type="submit" value="保存"/><input type="button" value="取消"/></div>
+    </form>
+</div>
+<!--高级设置修改-->
+<div class="xg">
+    <div class="clearfix"><a href="#" class="fr gb"><img src="/static/img/icon4.png"/></a></div>
+    <h3>切换账号地区</h3>
+    <form th:action="@{/user/updateArea}" method="post"><p><label>地区：</label><input type="text" name="area" th:value="${user.getArea()}"/></p>
+        <div class="bc"><input type="submit" value="保存"/><input type="button" value="取消"/></div>
+    </form>
+</div><!--修改头像-->
+<div class="avatar">
+    <div class="clearfix"><a class="fr gb"><img src="/static/img/icon4.png"/></a></div>
+    <h3>修改头像</h3>
+    <h4>请上传图片</h4>
+    <form action="#" method="get"><h4>请上传图片</h4>
+        <input type="button" onclick="file.click()" value="上传头像"/>
+        <input id="file" type="file" style="display: none">
+        <p>jpg或png，大小不超过2M</p>
+        <input type="button" onclick="uploadFile()" value="提交"/></form>
+</div><!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/user.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
