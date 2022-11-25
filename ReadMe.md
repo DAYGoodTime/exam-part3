@@ -14,7 +14,10 @@
 
 - com/day/examp3/utils/Cos.java 腾讯云COS的秘钥以及地址等配置
 
-- com/day/examp3/controller/OrderController.java : 273~276 ,345~~347 配置微信支付秘钥,同步通知地址,以及支付宝的秘钥等
+- com/day/examp3/controller/OrderController.java : 273~276 ,345~347 配置微信支付秘钥,同步通知地址,以及支付宝的秘钥等
+- 
+- com/day/examp3/utils/DynamicConfigUtil.java :64 需要配置项目的绝对路径
 
+- com/day/examp3/utils/BackUpDataBaseManager.java : 36,38 配置sql文件的备份路径以及缓存目录
 
 根目录有备份的sql文件,可自行使用
