@@ -10,7 +10,7 @@
 <div th:replace="~{common/usernavbar::top}"></div>
 <!------------------------------idea------------------------------>
 <div class="address mt" id="add">
-    <div class="wrapper clearfix"><a href="index.html" class="fl">首页</a><span>/</span><a href="mygxin.html" class="on">个人中心</a>
+    <div class="wrapper clearfix"><a th:href="@{/main}" class="fl">首页</a><span>/</span><a th:href="@{/user/profile}" class="on">个人中心</a>
     </div>
 </div><!------------------------------Bott------------------------------>
 <div class="Bott">
@@ -18,19 +18,19 @@
         <div th:replace="~{common/usernavbar::user-left-navbar(active='mygxin')}"></div>
         <div class="you fl">
             <div class="tx clearfix">
-                <div class="fl clearfix"><a href="#" class="fl"><img width="92px" height="92px" th:src="${session.user_img}"/></a>
+                <div class="fl clearfix"><a href="#" class="fl"><img th:src="${user.getHeadPic()}"  width="92px" height="92px" /></a>
                     <p class="fl"><span th:text="${user.getNickName()}"></span><a th:href="@{/user/information/{uid}(uid=${session.user_id})}">修改个人信息></a></p></div>
                 <div class="fr" th:text="'注册邮箱:'+${user.getEmail()}"></div>
             </div>
             <div class="bott">
                 <div class="clearfix"><a href="#" class="fl"><img src="/static/img/gxin1.jpg"/></a>
-                    <p class="fl"><span>待支付的订单：<strong>0</strong></span><a href="myorderq.html">查看待支付订单></a></p></div>
+                    <p class="fl"><span>待支付的订单：<strong th:text="${orderstatucount.get('待支付')}" ></strong></span><a th:href="@{/user/myOrder/待支付}">查看待支付订单></a></p></div>
                 <div class="clearfix"><a href="#" class="fl"><img src="/static/img/gxin2.jpg"/></a>
-                    <p class="fl"><span>待收货的订单：<strong>0</strong></span><a href="myorderq.html">查看待收货订单></a></p></div>
+                    <p class="fl"><span>待收货的订单：<strong th:text="${orderstatucount.get('待收货')}"></strong></span><a th:href="@{/user/myOrder/待收货}">查看待收货订单></a></p></div>
                 <div class="clearfix"><a href="#" class="fl"><img src="/static/img/gxin3.jpg"/></a>
-                    <p class="fl"><span>待评价的订单：<strong>0</strong></span><a href="myprod.html">查看待评价订单></a></p></div>
+                    <p class="fl"><span>待评价的订单：<strong th:text="${orderstatucount.get('已收货')}"></strong></span><a th:href="@{/user/myProd}">查看待评价订单></a></p></div>
                 <div class="clearfix"><a href="#" class="fl"><img src="/static/img/gxin4.jpg"/></a>
-                    <p class="fl"><span>喜欢的商品：<strong>0</strong></span><a href="#">查看喜欢的商品></a></p></div>
+                    <p class="fl"><span>喜欢的商品：<strong th:text="${collectionCount}" ></strong></span><a th:href="@{/user/collection}">查看喜欢的商品></a></p></div>
             </div>
         </div>
     </div>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        // $.ajax({
+        //     url: serverhost + "/user/updateBaseInfo",
+        //     method: "POST",
+        //     contentType: "application/json;charset=utf-8",
+        //     data:JSON.stringify(formObject),
+        //     async: true,
+        //     dataType:"json",
+        //     success: function (data) {
+        //         console.log(data)
+        //         let obj = {}
+        //         obj = data
+        //         if(data.code==="200"){
+        //             alert("更新成功")
+        //             window.location.reload()
+        //         }else{
+        //             alert(data.msg)
+        //         }
+        //     },
+        // })
+        function user_sumbit() {;
+            let data = $("#myform").serializeArray()
+            console.log(data)
+            for (let i = 0; i < data.length; i++) {
+                if(data[i].value===undefined||data[i].value===''){
+                    $(".warn-text").css("display","inline-block")
+                    $(".warn-text").text("还有参数未填写")
+                    return;
+                }
+            }
+            alert("ok")
+            let formData = new FormData();
+            var file = $("#file")[0].files[0];
+            $.each(data,function(i,item){
+                formData.append(item.name,item.value)
+            })
+            formData.append("file",file)
+            $.ajax({
+                type:"post",
+                enctype: 'multipart/form-data',
+                url:"http://localhost:8088/batch/upload",
+                processData:false,
+                contentType:false,
+                data:formData,
+                dataType: 'json',
+                success:function (obj) {
+                    let data = obj.responseJSON
+                    console.log(obj.code)
+                }
+            })
+        }
+    </script>
+</head>
+<body><!-------------------reg-------------------------->
+<div>
+    <form method="post" id="myform" name="myform" enctype="multipart/form-data">
+        <table class="insert-tab" width="100%">
+            <tbody>
+            <tr>
+                <th><i class="require-red">*</i>用户昵称:</th>
+                <td>
+                    <input required class="common-text required" id="title" name="nickName" size="50" value="" type="text">
+                </td>
+            </tr>
+            <tr>
+                <th><i class="require-red">*</i>用户密码:</th>
+                <td><input required class="common-text" name="password" size="50" type="text"></td>
+            </tr>
+            <tr>
+                <th><i class="require-red">*</i>描述:</th>
+                <td><textarea  required class="context" name="description" size="50" type="text"></textarea></td>
+            </tr>
+            <tr>
+                <th>头像(为空使用默认图片):</th>
+                <td><input id="file" type="file"></td>
+            </tr>
+            <tr>
+                <th>是否为管理员:</th>
+                <td><input name="isAdmin" type="radio" value="1">是
+                    <input name="isAdmin" type="radio" value="0">否
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>
+                    <input class="btn btn-primary btn6 mr10" value="提交" onclick="user_sumbit()" type="button">
+                    <a th:href="@{/admin/userPanel}" ><input class="btn btn6" value="返回" type="button"></a>
+                    <p class="warn-text" style="display: none;color: red"></p>
+                </td>
+            </tr>
+            </tbody></table>
+    </form>
+</div>
+</body>
+</html>

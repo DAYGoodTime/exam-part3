@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>最家</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
+    <script th:inline="javascript">
+        window.onload1=function () {
+            let products = [[${productList}]]
+            console.log(products)
+            let proIndex = 0
+            let amount = products.length;
+            let boxAmount = amount / 4
+            if(amount % 4 !==0) boxAmount++;
+            let pList = document.querySelector(".search-result")
+            for (let i = 0; i < boxAmount; i++) {
+                let div = document.createElement("div")
+                div.className = "pList clearfix tran"
+                pList.appendChild(div)
+            }
+            let divs = document.querySelector(".search-result").querySelectorAll("div")
+            for (let i = 0; i < divs.length; i++) {
+                for (let j = 0; j < 4; j++) {
+                    let a = document.createElement("a")
+                    if(products[proIndex].productId==null||products[proIndex].productId===""){
+                        proIndex++
+                        continue;
+                    }
+                    if(products[proIndex].picture==null||products[proIndex].picture===""){
+                        proIndex++
+                        continue;
+                    }
+                    a.href = "/proDetail/"+products[proIndex].productId
+                    let dl = document.createElement("dl")
+                    let dt = document.createElement("dt")
+                    let span1 = document.createElement("span")
+                    let span2 = document.createElement("span")
+                    span1.className = "abl"
+                    span2.className = "abr"
+                    let img = document.createElement("img")
+                    img.src = products[proIndex].picture
+                    dt.appendChild(span1)
+                    dt.appendChild(img)
+                    dt.appendChild(span2)
+                    dl.appendChild(dt)
+                    let dd1 = document.createElement("dd")
+                    dd1.innerHTML = products[proIndex].name
+                    dl.appendChild(dd1)
+                    let dd2 = document.createElement("dd")
+                    let span3 = document.createElement("span")
+                    span3.innerHTML = '￥' + products[proIndex].fixedPrice
+                    dd2.appendChild(span3)
+                    dl.appendChild(dd2)
+                    a.appendChild(dl)
+                    divs[i].appendChild(a)
+                    proIndex++
+                }
+            }
+        }
+    </script>
+    <style>
+        ol.flex-control-nav.flex-control-paging{
+            display: none;
+        }
+        ul.flex-direction-nav{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!------------------------------head------------------------------>
+<div class="head" th:replace="~{common/usernavbar::top}"></div>
+<!-------------------------banner--------------------------->
+<div class="block_home_slider">
+    <div id="home_slider" class="flexslider">
+        <ul class="slides">
+            <li>
+                <div class="slide"><img src="/static/img/banner2.jpg"/></div>
+            </li>
+            <li>
+                <div class="slide"><img src="/static/img/banner1.jpg"/></div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="address">
+    <div class="wrapper clearfix"><a th:href="@{/main}">首页</a><span>/</span>搜索结果<span>/</span></div>
+</div>
+<!------------------------------thImg------------------------------>
+<div class="people">
+    <div class="wrapper">
+        <h2>搜索结果</h2>
+        <div class="search-result wrapper">
+            <div class="pList clearfix tran" >
+
+            </div>
+        </div>
+    </div>
+</div><!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<!-------------------login--------------------------><!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/nav.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/jquery.flexslider-min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">$(function () {
+    $('#home_slider').flexslider({
+        animation: 'slide',
+        controlNav: true,
+        directionNav: true,
+        animationLoop: true,
+        slideshow: true,
+        slideshowSpeed: 2000,
+        useCSS: false
+    });
+});</script>
+</body>
+</html>

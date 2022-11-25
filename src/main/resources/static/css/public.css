@@ -12,6 +12,21 @@ html, body {
     background: #FFF;
 }
 
+.gwc::after {
+    content: attr(numbers);
+    position: absolute;
+    right: -3px;
+    top:-3px;
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    background-color: #ff3838;
+    color: #ffffff;
+    font-size: 10px;
+    line-height: 15px;
+    text-align: center;
+}
+
 /*对HTML元素中的字体、颜色、背景色进行初始设置*/
 ul li, ol li {
     list-style: none;
@@ -326,7 +341,7 @@ article, aside, figcaption, figure, footer, header, hgroup, nav, section, summar
     position: absolute;
     top: 30px;
     background: #fff;
-    right: 10px;
+    right: 52px;
     padding: 2px;
     z-index: 10;
     border: 1px solid #A10000;

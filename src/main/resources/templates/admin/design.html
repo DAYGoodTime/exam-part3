@@ -1,0 +1,614 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>后台管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/admin.js" type="text/javascript" charset="utf-8"></script>
+    <script th:inline="javascript">
+        var ObjectList = []
+        var currentPage
+        var curPage
+        window.onload = function () {
+            ObjectList = []
+            currentPage = [[${currentPage}]]
+            curPage = [[${curPage}]]
+            console.log(currentPage)
+        }
+
+        function refresh() {
+            window.location.reload()
+        }
+
+        function dellALL() {
+            if (ObjectList.length >= 1) {
+                let obj = {"object": currentPage, "objectIds": ObjectList}
+                $.ajax({
+                    url: serverhost + "/admin/delItems",
+                    method: "POST",
+                    data: JSON.stringify(obj),
+                    contentType: "application/json;charset=utf-8",
+                    async: true,
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        if (data.code === "200") {
+                            alert("删除成功")
+                            window.location.reload()
+                        } else {
+                            alert("删除失败")
+                        }
+
+                    }
+                })
+            }
+
+        }
+    </script>
+    <style>
+        .result-wrap table {
+            width: 100%;
+            table-layout: fixed; /* 只有定义了表格的布局算法为fixed，下面td的定义才能起作用。 */
+        }
+        .result-wrap td {
+            width: 100%;
+            word-break: keep-all; /* 不换行 */
+            white-space: nowrap; /* 不换行 */
+            overflow: hidden; /* 内容超出宽度时隐藏超出部分的内容 */
+            text-overflow: ellipsis; /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用*/
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{common/adminpanel::topbar}"></div>
+<div class="container clearfix">
+    <div th:if="${currentPage}=='user'">
+        <div th:replace="~{common/adminpanel::adminSilder(active='user')}"></div>
+    </div>
+    <div th:if="${currentPage}=='product'">
+        <div th:replace="~{common/adminpanel::adminSilder(active='pro')}"></div>
+    </div>
+    <div th:if="${currentPage}=='order'">
+        <div th:replace="~{common/adminpanel::adminSilder(active='order')}"></div>
+    </div>
+    <div th:if="${currentPage}=='address'">
+        <div th:replace="~{common/adminpanel::adminSilder(active='add')}"></div>
+    </div>
+    <div th:if="${currentPage}=='comment'">
+        <div th:replace="~{common/adminpanel::adminSilder(active='comment')}"></div>
+    </div>
+    <div th:if="${currentPage}=='category'">
+        <div th:replace="~{common/adminpanel::adminSilder(active='category')}"></div>
+    </div>
+    <!--/sidebar-->
+    <div class="main-wrap" th:if="${currentPage}=='user'">
+        <div class="crumb-wrap user-div">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span
+                    class="crumb-step">&gt;</span><span class="crumb-name">用户管理</span></div>
+        </div>
+        <div class="search-wrap">
+            <div class="search-content">
+                <form action="#" method="post">
+                    <table class="search-tab">
+                        <tr>
+                            <th width="120">选择分类:</th>
+                            <td>
+                                <select name="search-sort" id="user-opt">
+                                    <option value="all" th:selected="${option}=='all'" >全部</option>
+                                    <option value="admin" th:selected="${option}=='admin'" >管理员用户</option>
+                                    <option value="normal" th:selected="${option}=='normal'">非管理员用户</option>
+                                </select>
+                            </td>
+                            <th width="70">搜索:</th>
+                            <td><input class="common-text keyword" placeholder="用户名" name="keywords" value="" id=""
+                                       type="text"></td>
+                            <td><input class="btn btn-primary btn2" name="sub" value="查询" type="button"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="result-wrap">
+            <form name="myform" id="user-form" method="post">
+                <div class="result-title">
+                    <div class="result-list">
+                        <a th:href="@{/admin/addUser}"><i class="icon-font"></i>新增用户</a>
+                        <a id="batchDel" href="javascript:dellALL()"><i class="icon-font"></i>批量删除</a>
+                        <a id="updateOrd" href="javascript:refresh()"><i class="icon-font"></i>更新排序</a>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <table class="result-tab" width="100%">
+                        <tr>
+                            <th class="tc" width="5%"><input class="checkAll" name="" type="checkbox"></th>
+                            <th>ID</th>
+                            <th>昵称</th>
+                            <th>密码</th>
+                            <th>性别</th>
+                            <th>邮箱</th>
+                            <th>生日</th>
+                            <th>最后一次登录时间</th>
+                            <th>最后一次登录ip</th>
+                            <th>是否为管理员</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr th:each="user:${userList}">
+                            <td class="tc"><input class="ids" name="id[]" th:value="${user.userId}" type="checkbox">
+                            </td>
+                            <td th:text="${user.userId}"></td>
+                            <td th:text="${user.nickName}"></td>
+                            <td th:text="${user.password}"></td>
+                            <td th:text="${user.sex}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${#dates.format(user.birth,'yyyy-MM-dd')}"></td>
+                            <td th:text="${user.lastLoginTime}"></td>
+                            <td th:text="${user.lastLoginIp}"></td>
+                            <td th:text="${user.isAdmin}==0?'否':'是'"></td>
+                            <td>
+                                <a class="link-update" th:href="@{/admin/modifyUser/{uid}(uid=${user.userId})}">修改</a>
+                                <a class="link-del" th:href="@{/admin/delUser/{uid}(uid=${user.userId})}">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <ul class="wb">
+                        <li class="totals" th:text="'总共:'+${Totals}+'个用户'"></li>
+                        <a th:href="@{/admin/userPanel/{curPage}(curPage=${curPage}-1)}">
+                            <li th:if="${curPage}!=1">上一页</li>
+                        </a>
+                        <tr th:each="page:${#numbers.sequence(Findex,Lindex)}">
+                            <a class="page"
+                               th:href="@{/admin/userPanel/{curPage}(curPage=${page})}"
+                               th:if="${page}!=${curPage} and ${page}>=${Findex} and ${page}<=${Lindex}">
+                                <li class="page" th:text="${page}" th:if="${page}!=${curPage}"></li>
+                            </a>
+                            <li class="page curPage" th:text="${page}" th:if="${page}==${curPage}"></li>
+                        </tr>
+                        <a th:href="@{/admin/userPanel/{curPage}(curPage=${curPage}+1)}">
+                            <li th:if="${curPage}!=${TotalPages}">下一页</li>
+                        </a>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div> <!-- 用户页面 -->
+    <div class="main-wrap" th:if="${currentPage}=='order'">
+        <div class="crumb-wrap">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span
+                    class="crumb-step">&gt;</span><span class="crumb-name">订单管理</span></div>
+        </div>
+        <div class="search-wrap">
+            <div class="search-content">
+                <form action="#" method="post">
+                    <table class="search-tab">
+                        <tr>
+                            <th width="120">选择分类:</th>
+                            <td>
+                                <select name="search-sort" id="status-opt">
+                                    <option th:selected="${option}=='all'" value="all">全部</option>
+                                    <option th:selected="${option}=='待支付'" value="待支付">待支付</option>
+                                    <option th:selected="${option}=='待收货'" value="待收货">待收货</option>
+                                    <option th:selected="${option}=='已收货'" value="已收货">已收货</option>
+                                    <option th:selected="${option}=='已完成'" value="已完成">已完成</option>
+                                </select>
+                            </td>
+                            <th width="70">搜索:</th>
+                            <td><input class="common-text keyword" placeholder="批次ID" name="keywords" value=""
+                                       type="text"></td>
+                            <td><input class="btn btn-primary btn2" name="sub" value="查询" type="button"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="result-wrap order-div">
+            <form name="myform" id="oder-form" method="post">
+                <div class="result-title">
+                    <div class="result-list">
+                        <a th:href="@{/admin/addOrder}"><i class="icon-font"></i>新增订单</a>
+                        <a class="batchDel" href="javascript:dellALL()"><i class="icon-font"></i>批量删除</a>
+                        <a class="updateOrd" href="javascript:refresh"><i class="icon-font"></i>更新排序</a>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <table class="result-tab" width="100%">
+                        <tr>
+                            <th class="tc" width="5%"><input class="checkAll" type="checkbox"></th>
+                            <th>ID</th>
+                            <th>用户ID</th>
+                            <th>订单状态</th>
+                            <th>总价格</th>
+                            <th>创建订单时间</th>
+                            <th>支付方式ID</th>
+                            <th>接收地址ID</th>
+                            <th>产品ID</th>
+                            <th>对应的产品数量</th>
+                            <th>批次ID</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr th:each="order:${orderList}">
+                            <td class="tc"><input name="id[]" class="ids" th:value="${order.orderId}" type="checkbox">
+                            </td>
+                            <td th:text="${order.orderId}"></td>
+                            <td th:text="${order.userId}"></td>
+                            <td th:text="${order.status}"></td>
+                            <td th:text="${order.totalPrice}"></td>
+                            <td th:text="${#dates.format(order.getDateTime(),'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td th:text="${order.paymentId}"></td>
+                            <td th:text="${order.receiveAddressId}"></td>
+                            <td th:text="${order.productId}"></td>
+                            <td th:text="${order.amount}"></td>
+                            <td th:text="${order.boundId}"></td>
+                            <td>
+                                <a class="link-update"
+                                   th:href="@{/admin/modifyOrder/{oid}(oid=${order.orderId})}">修改</a>
+                                <a class="link-del" th:href="@{/admin/delOrder/{oid}(pid=${order.orderId})}">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <ul class="wb">
+                        <li class="totals" th:text="'总共:'+${Totals}+'件订单'"></li>
+                        <a th:href="@{/admin/orderPanel/{curPage}(curPage=${curPage}-1)}">
+                            <li th:if="${curPage}!=1">上一页</li>
+                        </a>
+                        <tr th:each="page:${#numbers.sequence(Findex,Lindex)}">
+                            <a class="page"
+                               th:href="@{/admin/orderPanel/{curPage}(curPage=${page})}"
+                               th:if="${page}!=${curPage} and ${page}>=${Findex} and ${page}<=${Lindex}">
+                                <li class="page" th:text="${page}" th:if="${page}!=${curPage}"></li>
+                            </a>
+                            <li class="page curPage" th:text="${page}" th:if="${page}==${curPage}"></li>
+                        </tr>
+                        <a th:href="@{/admin/orderPanel/{curPage}(curPage=${curPage}+1)}">
+                            <li th:if="${curPage}!=${TotalPages}">下一页</li>
+                        </a>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div><!-- 订单页面 -->
+    <div class="main-wrap" th:if="${currentPage}=='product'">
+        <div class="crumb-wrap">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span
+                    class="crumb-step">&gt;</span><span class="crumb-name">产品管理</span></div>
+        </div>
+        <div class="search-wrap">
+            <div class="search-content">
+                <form action="#" method="post">
+                    <table class="search-tab">
+                        <tr>
+                            <th width="120">选择分类:</th>
+                            <td>
+                                <select name="search-sort" id="status-pro">
+                                    <option value="">全部</option>
+                                </select>
+                            </td>
+                            <th width="70">搜索:</th>
+                            <td><input class="common-text keyword" placeholder="商品名字" name="keywords" value=""
+                                       type="text"></td>
+                            <td><input class="btn btn-primary btn2" name="sub" value="查询" type="button"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="result-wrap order-div">
+            <form name="myform" id="pro-form" method="post">
+                <div class="result-title">
+                    <div class="result-list">
+                        <a th:href="@{/admin/addProduct}"><i class="icon-font"></i>新增商品</a>
+                        <a th:href="@{/admin/addCategory}"><i class="icon-font"></i>新增分类</a>
+                        <a class="batchDel" href="javascript:dellALL()"><i class="icon-font"></i>批量删除</a>
+                        <a class="updateOrd" href="javascript:refresh()"><i class="icon-font"></i>更新排序</a>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <table class="result-tab" width="100%">
+                        <tr>
+                            <th class="tc" width="5%"><input class="checkAll" name="" type="checkbox"></th>
+                            <th>ID</th>
+                            <th>商品名字</th>
+                            <th>关键词</th>
+                            <th>添加时间</th>
+                            <th>价格</th>
+                            <th style="width:250px">描述</th>
+                            <th>分类</th>
+                            <th>库存</th>
+                            <th style="width: 80px">操作</th>
+                        </tr>
+                        <tr th:each="pro:${productList}">
+                            <td class="tc"><input name="id[]" class="ids" th:value="${pro.productId}" type="checkbox">
+                            </td>
+                            <td th:text="${pro.productId}"></td>
+                            <td th:text="${pro.name}"></td>
+                            <td th:text="${pro.keywords}"></td>
+                            <td th:text="${#dates.format(pro.addTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td th:text="${pro.fixedPrice}"></td>
+                            <td th:text="${pro.description}"></td>
+                            <td th:text="${pro.catalog}"></td>
+                            <td th:text="${pro.storage}"></td>
+                            <td>
+                                <a class="link-update"
+                                   th:href="@{/admin/modifyProduct/{pid}(pid=${pro.productId})}">修改</a>
+                                <a class="link-del" th:href="@{/admin/delProduct/{pid}(pid=${pro.productId})}">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <ul class="wb">
+                        <li class="totals" th:text="'总共:'+${Totals}+'件商品'"></li>
+                        <a th:href="@{/admin/productPanel/{curPage}(curPage=${curPage}-1)}">
+                            <li th:if="${curPage}!=1">上一页</li>
+                        </a>
+                        <tr th:each="page:${#numbers.sequence(Findex,Lindex)}">
+                            <a class="page"
+                               th:href="@{/admin/productPanel/{curPage}(curPage=${page})}"
+                               th:if="${page}!=${curPage} and ${page}>=${Findex} and ${page}<=${Lindex}">
+                                <li class="page" th:text="${page}" th:if="${page}!=${curPage}"></li>
+                            </a>
+                            <li class="page curPage" th:text="${page}" th:if="${page}==${curPage}"></li>
+                        </tr>
+                        <a th:href="@{/admin/productPanel/{curPage}(curPage=${curPage}+1)}">
+                            <li th:if="${curPage}!=${TotalPages}">下一页</li>
+                        </a>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div><!-- 产品页面 -->
+    <div class="main-wrap" th:if="${currentPage}=='address'">
+        <div class="crumb-wrap">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span
+                    class="crumb-step">&gt;</span><span class="crumb-name">订单管理</span></div>
+        </div>
+        <div class="search-wrap">
+            <div class="search-content">
+                <form action="#" method="post">
+                    <table class="search-tab">
+                        <tr>
+                            <th width="70">搜索:</th>
+                            <td><input class="common-text keyword" placeholder="用户ID" name="keywords" value=""
+                                       type="text"></td>
+                            <td><input class="btn btn-primary btn2" name="sub" value="查询" type="button"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="result-wrap order-div">
+            <form name="myform" id="add-form" method="post">
+                <div class="result-title">
+                    <div class="result-list">
+                        <a th:href="@{/admin/addAddress}"><i class="icon-font"></i>新增地址</a>
+                        <a class="batchDel" href="javascript:dellALL()"><i class="icon-font"></i>批量删除</a>
+                        <a class="updateOrd" href="javascript:refresh()"><i class="icon-font"></i>更新排序</a>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <table class="result-tab" width="100%">
+                        <tr>
+                            <th class="tc" width="5%"><input class="checkAll" name="" type="checkbox"></th>
+                            <th>ID</th>
+                            <th>用户ID</th>
+                            <th>收货人</th>
+                            <th>省份</th>
+                            <th>详细地址</th>
+                            <th>邮政编码</th>
+                            <th>手机号</th>
+                            <th>邮箱</th>
+                            <th>国家</th>
+                            <th>是否为默认地址</th>
+                            <th>逻辑删除</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr th:each="add:${addressList}">
+                            <td class="tc"><input name="id[]" class="ids" th:value="${add.receiveAddressId}"
+                                                  type="checkbox"></td>
+                            <td th:text="${add.receiveAddressId}"></td>
+                            <td th:text="${add.userId}"></td>
+                            <td th:text="${add.receiveName}"></td>
+                            <td th:text="${add.province}"></td>
+                            <td th:text="${add.address}"></td>
+                            <td th:text="${add.zipcode}"></td>
+                            <td th:text="${add.telephone}"></td>
+                            <td th:text="${add.email}"></td>
+                            <td th:text="${add.area}"></td>
+                            <td th:text="${add.isDefault}==1?'是':'否'"></td>
+                            <td th:text="${add.isDeleted}==1?'已删除':'未删除'"></td>
+                            <td>
+                                <a class="link-update"
+                                   th:href="@{/admin/modifyAddress/{addId}(addId=${add.receiveAddressId})}">修改</a>
+                                <a class="link-del"
+                                   th:href="@{/admin/delAddress/{addId}(addId=${add.receiveAddressId})}">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <ul class="wb">
+                        <li class="totals" th:text="'总共:'+${Totals}+'个地址'"></li>
+                        <a th:href="@{/admin/addressPanel/{curPage}(curPage=${curPage}-1)}">
+                            <li th:if="${curPage}!=1">上一页</li>
+                        </a>
+                        <tr th:each="page:${#numbers.sequence(Findex,Lindex)}">
+                            <a class="page"
+                               th:href="@{/admin/addressPanel/{curPage}(curPage=${page})}"
+                               th:if="${page}!=${curPage} and ${page}>=${Findex} and ${page}<=${Lindex}">
+                                <li class="page" th:text="${page}" th:if="${page}!=${curPage}"></li>
+                            </a>
+                            <li class="page curPage" th:text="${page}" th:if="${page}==${curPage}"></li>
+                        </tr>
+                        <a th:href="@{/admin/addressPanel/{curPage}(curPage=${curPage}+1)}">
+                            <li th:if="${curPage}!=${TotalPages}">下一页</li>
+                        </a>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div><!-- 地址页面 -->
+    <div class="main-wrap" th:if="${currentPage}=='comment'">
+        <div class="crumb-wrap user-div">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span
+                    class="crumb-step">&gt;</span><span class="crumb-name">评论管理</span></div>
+        </div>
+        <div class="search-wrap">
+            <div class="search-content">
+                <form action="#" method="post">
+                    <table class="search-tab">
+                        <tr>
+                            <th width="120">选择分类:</th>
+                            <td>
+                                <select name="search-sort" id="comment-opt">
+                                    <option value="">全部</option>
+                                </select>
+                            </td>
+                            <th width="70">搜索:</th>
+                            <td><input class="common-text keyword" placeholder="评论内容" name="keywords" value=""
+                                       type="text"></td>
+                            <td><input class="btn btn-primary btn2" name="sub" value="查询" type="button"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="result-wrap">
+            <form name="myform" id="comment-form" method="post">
+                <div class="result-title">
+                    <div class="result-list">
+                        <a th:href="@{/admin/addComment}"><i class="icon-font"></i>新增评论</a>
+                        <a id="comment-batchDel" href="javascript:dellALL()"><i class="icon-font"></i>批量删除</a>
+                        <a id="comment-updateOrd" href="javascript:refresh()"><i class="icon-font"></i>更新排序</a>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <table class="result-tab" width="100%">
+                        <tr>
+                            <th class="tc" width="5%"><input class="checkAll" name="" type="checkbox"></th>
+                            <th>评论ID</th>
+                            <th>用户ID</th>
+                            <th>产品ID</th>
+                            <th>评论内容</th>
+                            <th>评论时间</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr th:each="comment:${commentList}">
+                            <td class="tc"><input name="id[]" class="ids" th:value="${comment.commentId}"
+                                                  type="checkbox"></td>
+                            <td th:text="${comment.commentId}"></td>
+                            <td th:text="${comment.userId}"></td>
+                            <td th:text="${comment.productId}"></td>
+                            <td class="longtext" th:text="${comment.context}"></td>
+                            <td th:text="${#dates.format(comment.createTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td>
+                                <a class="link-update"
+                                   th:href="@{/admin/modifyComment/{commentId}(commentId=${comment.commentId})}">修改</a>
+                                <a class="link-del"
+                                   th:href="@{/admin/delComment/{commentId}(commentId=${comment.commentId})}">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <ul class="wb">
+                        <li class="totals" th:text="'总共:'+${Totals}+'个评论'"></li>
+                        <a th:href="@{/admin/commentPanel/{curPage}(curPage=${curPage}-1)}">
+                            <li th:if="${curPage}!=1">上一页</li>
+                        </a>
+                        <tr th:each="page:${#numbers.sequence(Findex,Lindex)}">
+                            <a class="page"
+                               th:href="@{/admin/commentPanel/{curPage}(curPage=${page})}"
+                               th:if="${page}!=${curPage} and ${page}>=${Findex} and ${page}<=${Lindex}">
+                                <li class="page" th:text="${page}" th:if="${page}!=${curPage}"></li>
+                            </a>
+                            <li class="page curPage" th:text="${page}" th:if="${page}==${curPage}"></li>
+                        </tr>
+                        <a th:href="@{/admin/commentPanel/{curPage}(curPage=${curPage}+1)}">
+                            <li th:if="${curPage}!=${TotalPages}">下一页</li>
+                        </a>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div> <!-- 评论页面 -->
+    <div class="main-wrap" th:if="${currentPage}=='category'">
+        <div class="crumb-wrap">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span
+                    class="crumb-step">&gt;</span><span class="crumb-name">订单管理</span></div>
+        </div>
+        <div class="search-wrap">
+            <div class="search-content">
+                <form action="#" method="post">
+                    <table class="search-tab">
+                        <tr>
+                            <th width="120">选择分类:</th>
+                            <td>
+                                <select name="search-sort" id="status-add">
+                                    <option value="">全部</option>
+                                </select>
+                            </td>
+                            <th width="70">搜索:</th>
+                            <td><input class="common-text keyword" placeholder="父类名称" name="keywords" value=""
+                                       type="text"></td>
+                            <td><input class="btn btn-primary btn2" name="sub" value="查询" type="button"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="result-wrap order-div">
+            <form name="myform" id="category-form" method="post">
+                <div class="result-title">
+                    <div class="result-list">
+                        <a th:href="@{/admin/addCategory}"><i class="icon-font"></i>新增分类</a>
+                        <a class="batchDel" href="javascript:dellALL()"><i class="icon-font"></i>批量删除</a>
+                        <a class="updateOrd" href="javascript:refresh()"><i class="icon-font"></i>更新排序</a>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <table class="result-tab" width="100%">
+                        <tr>
+                            <th class="tc" width="5%"><input class="checkAll" name="" type="checkbox"></th>
+                            <th>分类id</th>
+                            <th>父分类id</th>
+                            <th>父分类名字</th>
+                            <th>子分类id</th>
+                            <th>子分类名字</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr th:each="category:${categoryList}">
+                            <td class="tc"><input name="id[]" class="ids" th:value="${category.categoryId}"
+                                                  type="checkbox"></td>
+                            <td th:text="${category.categoryId}"></td>
+                            <td th:text="${category.parentCategory}"></td>
+                            <td th:text="${category.parentName}"></td>
+                            <td th:text="${category.childrenCategory}==null?'暂无子分类':${category.childrenCategory}"></td>
+                            <td th:text="${category.childrenName}==null?'暂无子分类':${category.childrenName}"></td>
+                            <td>
+                                <a class="link-update"
+                                   th:href="@{/admin/modifyCategory/{categoryId}(categoryId=${category.categoryId})}">修改</a>
+                                <a class="link-del"
+                                   th:href="@{/admin/delCategory/{categoryId}(categoryId=${category.categoryId})}">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                    <ul class="wb">
+                        <li class="totals" th:text="'总共:'+${Totals}+'个分类'"></li>
+                        <a th:href="@{/admin/categoryPanel/{curPage}(curPage=${curPage}-1)}">
+                            <li th:if="${curPage}!=1">上一页</li>
+                        </a>
+                        <tr th:each="page:${#numbers.sequence(Findex,Lindex)}">
+                            <a class="page"
+                               th:href="@{/admin/categoryPanel/{curPage}(curPage=${page})}"
+                               th:if="${page}!=${curPage} and ${page}>=${Findex} and ${page}<=${Lindex}">
+                                <li class="page" th:text="${page}" th:if="${page}!=${curPage}"></li>
+                            </a>
+                            <li class="page curPage" th:text="${page}" th:if="${page}==${curPage}"></li>
+                        </tr>
+                        <a th:href="@{/admin/categoryPanel/{curPage}(curPage=${curPage}+1)}">
+                            <li th:if="${curPage}!=${TotalPages}">下一页</li>
+                        </a>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div><!-- 分类页面 -->
+</div>
+<!--/main-->
+</body>
+</html>

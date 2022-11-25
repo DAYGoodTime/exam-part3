@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>最家</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
+</head>
+<body>
+<!------------------------------head------------------------------>
+<div class="head" th:replace="~{common/usernavbar::top}"></div>
+<!-------------------------banner--------------------------->
+<div class="block_home_slider">
+    <div id="home_slider" class="flexslider">
+        <ul class="slides">
+            <li>
+                <div class="slide"><img src="/static/img/banner2.jpg"/></div>
+            </li>
+            <li>
+                <div class="slide"><img src="/static/img/banner1.jpg"/></div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="address">
+    <div class="wrapper clearfix"><a th:href="@{/main}">首页</a><span>/</span>模板页<span>/</span></div>
+</div>
+<!------------------------------thImg------------------------------>
+<div class="people">
+    <div class="wrapper">
+        <h2>搜索结果</h2>
+        <div class="search-result wrapper">
+            <div class="pList clearfix tran" >
+
+            </div>
+        </div>
+    </div>
+</div><!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<!-------------------login--------------------------><!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/nav.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/jquery.flexslider-min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">$(function () {
+    $('#home_slider').flexslider({
+        animation: 'slide',
+        controlNav: true,
+        directionNav: true,
+        animationLoop: true,
+        slideshow: true,
+        slideshowSpeed: 2000,
+        useCSS: false
+    });
+});</script>
+</body>
+</html>

@@ -10,13 +10,15 @@
         <result property="name" column="name"/>
         <result property="fixedPrice" column="fixed_price"/>
         <result property="category"  column="catalog"/>
+        <result property="amount"  column="amount"/>
     </resultMap>
     <select id="getUserShoppingList" resultMap="shoppingList" >
         select p.product_id,
                p.picture,
                p.name,
                p.fixed_price,
-               p.catalog
+               p.catalog,
+               sl.amount
         from lmonkey_product p inner join lmonkey_user_shopping_list sl
         where sl.user_id = #{uid} and sl.product_id=p.product_id
     </select>

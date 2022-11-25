@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @TableName("lmonkey_product")
 @Data
@@ -21,31 +22,13 @@ public class Product {
 
   private String name;
   private String keywords;
-  private java.sql.Date addTime;
+  private Date addTime;
   private String picture;
   private String bigPicture;
-  private Double fixedPrice;
-  private Double lowerPrice;
+  private BigDecimal fixedPrice;
+  private BigDecimal lowerPrice;
   private String description;
-  private String author;
-  private String publishing;
-  private java.sql.Timestamp publishTime;
-  private String isbn;
-  private String language;
-  private String whichEdition;
-  private String totalPage;
-  private String bindLayout;
-  private String bookSize;
-  private String editorDescription;
   private String catalog;
-  private String bookSummary;
-  private String authorSummary;
   private String extracts;
-  private java.sql.Date printTime;
-  private Long printNumber;
-  private String paperType;
-  private String printFrequency;
   private Integer storage;
-  private Integer o_amount; //作为订单时候的数量
-
 }

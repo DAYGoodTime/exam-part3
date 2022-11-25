@@ -55,8 +55,31 @@ public interface UserMapper extends BaseMapper<User> {
     @Delete("delete from lmonkey_user_shopping_list where user_id = #{uid} and product_id = #{pid}")
     int delShoppingProduct(@Param("uid")String user_id,@Param("pid")String product_id);
 
+    /**
+     * 添加一个商品到用户的购物车列表
+     * @param user_id 用户ID
+     * @param product_id 商品ID
+     * @param create_time 创建时间
+     * @param amount 商品数量
+     * @return 操作个数
+     */
+    @Insert("insert into lmonkey_user_shopping_list (user_id, product_id, create_time,amount) VALUES (#{uid},#{pid},#{c_time},#{amount})")
+    int addToUserCart(@Param("uid")String user_id, @Param("pid")String product_id, @Param("c_time")Date create_time,@Param("amount")Integer amount);
 
-    @Insert("insert into lmonkey_user_shopping_list (user_id, product_id, create_time) VALUES (#{uid},#{pid},#{c_time})")
-    int addToUserCart(@Param("uid")String user_id, @Param("pid")String product_id, @Param("c_time")Date create_time);
+    /**
+     * 查询用户的购物车数量
+     * @param user_id 用户id
+     * @return 购物车内的商品数量
+     */
+    @Select("select COUNT(*) from lmonkey_user_shopping_list where user_id = #{uid}")
+    int getUserShoppingCount(@Param("uid")String user_id);
+
+    /**
+     * 根据邮箱查询对应的用户,需要保证邮箱地址唯一
+     * @param email 唯一邮箱
+     * @return 用户对象
+     */
+    @Select("select * from lmonkey_user where email=#{email}")
+    User queryUserByEmail(@Param("email")String email);
 
 }

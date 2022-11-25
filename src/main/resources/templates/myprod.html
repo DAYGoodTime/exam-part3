@@ -5,13 +5,39 @@
     <title>最家</title>
     <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/myorder.css"/>
+    <script>
+        function addComment() {
+            let data = $(".pjform").serializeArray()
+            let formObject = {};
+            $.each(data,function(i,item){
+                formObject[item.name] = item.value;
+            });
+            let obj = {"obj":formObject}
+            $.ajax({
+                url: serverhost + "/user/addComment",
+                method: "POST",
+                data:JSON.stringify(obj),
+                contentType: "application/json;charset=utf-8",
+                async: true,
+                dataType:"json",
+                success: function (data) {
+                    if(data.code==="200"){
+                        alert("评论成功")
+                        window.location.reload()
+                    }else {
+                        alert(data.msg)
+                    }
+                },
+            })
+        }
+    </script>
 </head>
 <body><!------------------------------head------------------------------>
 <div th:replace="common/usernavbar::top"></div>
 <!------------------------------idea------------------------------>
 <div class="address mt">
-    <div class="wrapper clearfix"><a href="index.html" class="fl">首页</a><span>/</span><a href="mygxin.html" class="on">个人中心</a><span>/</span><a
-            href="myprod.html" class="on">待评价商品</a></div>
+    <div class="wrapper clearfix"><a th:href="@{/main}" class="fl">首页</a><span>/</span><a th:href="@{/user/profile}" class="on">个人中心</a><span>/</span><a
+            th:href="@{user/myprod}" class="on">待评价商品</a></div>
 </div><!------------------------------Bott------------------------------>
 <div class="Bott">
     <div class="wrapper clearfix">
@@ -20,77 +46,66 @@
             <div class="my clearfix"><h2 class="fl">商品评价</h2></div>
             <div class="dlist">
                 <ul class="clearfix" id="pro">
-                    <li class="on"><a href="#2">待评价商品</a></li>
-                    <li><a href="#2">已评价商品</a></li>
-                    <li><a href="#2">评价失效商品</a></li>
+                    <li th:class="${currentPage}=='待评价'?'on':'off'"><a th:href="@{/user/myProd}">待评价商品</a></li>
+                    <li th:class="${currentPage}=='已评价'?'on':'off'" ><a th:href="@{/user/myProd/{status}(status='finish')}">已评价商品</a></li>
                 </ul>
             </div>
             <div class="sx clearfix">
-                <div class="clearfix">
-                    <dl class="fl">
-                        <dt><a href="#"><img src="/static/img/nav3.jpg"/></a></dt>
-                        <dd><a href="#">家用创意壁挂 釉下彩复古</a></dd>
-                        <dd>¥199.00</dd>
-                        <dd>16000人评价</dd>
-                        <dd><a href="#2">评价</a></dd>
-                    </dl>
-                    <dl class="fl">
-                        <dt><a href="#"><img src="/static/img/nav3.jpg"/></a></dt>
-                        <dd><a href="#">家用创意壁挂 釉下彩复古</a></dd>
-                        <dd>¥199.00</dd>
-                        <dd>16000人评价</dd>
-                        <dd><a href="#2">评价</a></dd>
-                    </dl>
-                </div>
-                <div class="clearfix">
-                    <dl class="fl">
-                        <dt><a href="#"><img src="/static/img/nav3.jpg"/></a></dt>
-                        <dd><a href="#">家用创意壁挂 釉下彩复古</a></dd>
-                        <dd>¥199.00</dd>
-                        <dd>16000人评价</dd>
-                        <dd><a href="#2">查看评价</a></dd>
-                    </dl>
-                </div>
-                <div class="clearfix">
-                    <dl class="fl">
-                        <dt><a href="#"><img src="/static/img/nav3.jpg"/></a></dt>
-                        <dd><a href="#">家用创意壁挂 釉下彩复古</a></dd>
-                        <dd>¥199.00</dd>
-                        <dd>16000人评价</dd>
-                        <dd><a href="#2">暂不能评价</a></dd>
-                    </dl>
-                </div>
+                    <div class="clearfix">
+                        <tr th:each="order:${orders}">
+                            <dl class="fl">
+                                <dd id="comment-id" style="display: none" th:text="${order.commentId}" ></dd>
+                                <dd class="uid" th:text="${order.userId}" style="display: none"></dd>
+                                <dd class="pid" th:text="${order.product.productId}" style="display: none"></dd>
+                                <dt><a th:href="@{/proDetail/{pid}(pid=${order.product.productId})}" ><img width="162px" height="200px" th:src="${order.product.picture}"/></a></dt>
+                                <dd th:text="${order.product.name}" ></dd>
+                                <dd th:text="'¥'+${order.product.fixedPrice}"></dd>
+                                <dd th:text="${commentAmount.get(orderStat.index)}+'人评价'"></dd>
+                                <dd th:if="${currentPage}=='待评价'" ><a href="#2">评价</a></dd>
+                                <dd th:if="${currentPage}=='已评价'" ><a href="#2">查看评价</a></dd>
+                            </dl>
+                        </tr>
+                    </div>
             </div>
         </div>
     </div>
 </div>
 <!--<dl class="fl"><dt><a href="#"><img src="img/nav3.jpg"/></a></dt><dd><a href="#">家用创意壁挂  釉下彩复古</a></dd><dd>¥199.00</dd><dd>16000人评价</dd><dd><a href="#">待评价</a></dd></dl><dl class="fl"><dt><a href="#"><img src="img/nav3.jpg"/></a></dt><dd><a href="#">家用创意壁挂  釉下彩复古</a></dd><dd>¥199.00</dd><dd>16000人评价</dd><dd><a href="#">待评价</a></dd></dl>-->
 <!--遮罩-->
-<div class="mask"></div><!--评价弹框-->
+<div class="mask"></div>
+<!--评价弹框-->
 <div class="pj">
     <div class="clearfix"><a href="#" class="fr gb"><img src="/static/img/icon4.png"/></a></div>
     <h3>商品评分</h3>
-    <form action="#" method="get">
+    <form class="pjform" method="get">
+        <input class="uid"  name="uid" style="display: none">
+        <input class="pid" name="pid" style="display: none">
         <div class="clearfix"><p class="fl">请打分：</p>
             <p class="fl" id="xin"><a href="#2"><img src="/static/img/xin.png"/></a><a href="#2"><img src="/static/img/xin.png"/></a><a
                     href="#2"><img src="/static/img/xin.png"/></a><a href="#2"><img src="/static/img/xin.png"/></a><a href="#2"><img
-                    src="/static/img/xin.png"/></a></p></div>
-        <textarea name="" rows="" cols="" placeholder="请输入评价"></textarea>
-        <div class="bc"><input type="button" value="保存"/><input type="button" value="取消"/></div>
+                    src="/static/img/xin.png"/></a></p>
+        </div>
+        <textarea name="comment" rows="" cols="" placeholder="请输入评价"></textarea>
+        <input type="submit" style="display: none" class="pjsumbit">
+        <input id="likes" style="display: none" name="likes">
+        <div class="bc"><input onclick="addComment()" type="button" value="保存"/><input type="button" value="取消"/></div>
     </form>
-</div><!--查看评价-->
+</div>
+<!--查看评价-->
 <div class="chak">
     <div class="clearfix"><a href="#" class="fr gb"><img src="/static/img/icon4.png"/></a></div>
     <h3>商品评分</h3>
     <form action="#" method="get">
-        <div class="clearfix"><p class="fl">请打分：</p>
-            <p class="fl" id="xin"><a href="#2"><img src="/static/img/hxin.png"/></a><a href="#2"><img
+        <div class="clearfix"><p class="fl">评分：</p>
+            <p class="fl" id="xin2"><a href="#2"><img src="/static/img/hxin.png"/></a><a href="#2"><img
                     src="/static/img/hxin.png"/></a><a href="#2"><img src="/static/img/hxin.png"/></a><a href="#2"><img
                     src="/static/img/hxin.png"/></a><a href="#2"><img src="/static/img/hxin.png"/></a></p></div>
-        <textarea name="" rows="" cols="" placeholder="请输入评价">挺好的挺好的挺好的~五分好评</textarea>
-        <div class="bc"><input type="button" value="保存"/><input type="button" value="取消"/></div>
+        <textarea id="comment" name="" rows="" cols="" placeholder="请输入评价">挺好的挺好的挺好的~五分好评</textarea>
+        <input id="like" style="display: none" name="likes">
+        <div class="bc"><input id="updatacomment" type="button" value="保存"/><input type="button" value="取消"/></div>
     </form>
-</div><!--返回顶部-->
+</div>
+<!--返回顶部-->
 <div th:replace="~{common/usernavbar::user-gotop}"></div>
 <!--footer-->
 <div th:replace="~{common/usernavbar::footer}"></div>

@@ -67,9 +67,7 @@ $(function () {
         if (f) {
             if (e) {
                 //全选操作
-                $("input[type='checkbox']").each(function () {
-                    this.checked = true
-                });
+                checkAll();
                 b();
                 a()
             } else {
@@ -95,10 +93,19 @@ $(function () {
             if (e) {
                 //取消全选
                 $("input[type='checkbox']").each(function () {
-                    this.checked = false
+                    try{
+                        let index = $(this).parents(".th").find("#pindex")[0].innerHTML
+                        ShoppingList.map((val,i) =>{
+                            if(val.index === index){
+                                ShoppingList.splice(i,1)
+                            }
+                        });
+                        console.log("remove")
+                        this.checked = false
+                        b();
+                        a()
+                    }catch (e){}
                 });
-                b();
-                a()
             } else {
                 //取消单选
                 let index = $(this).parents(".th").find("#pindex")[0].innerHTML
@@ -119,12 +126,20 @@ $(function () {
             }
         }
     });
+    $(".choiceAll").click(function () {
+        var e = $(".checkAll").prop('checked');
+        if(!e){
+            checkAll();
+            $(".checkAll").prop("checked",true);
+            b();
+            a();
+        }
+    });
     $(".btns .cart").click(function () {
         if ($(".categ p").hasClass("on")) {
             var c = parseInt($(".num span").text());
             var d = parseInt($(".goCart span").text());
             $(".goCart span").text(c + d)
-            addToCart()
         }
     });
     $(".del").click(function () {
@@ -166,8 +181,79 @@ $(function () {
             }
         }
     });
+    $(".delAll").click(function () {
+        if ($(this).parent().parent().hasClass("th")) {
+            $(".mask").show();
+            $(".tipDel").show();
+            index = $(this).parents(".th").index() - 1;
+            $(".cer").click(function () {
+                $(".mask").hide();
+                $(".tipDel").hide();
+                $(".th").eq(index).remove();
+                $(".cer").off("click");
+                if ($(".th").length == 0) {
+                    $(".table .goOn").show()
+                }
+            });
+        } else {
+            if ($(".th input[type='checkbox']:checked").length == 0) {
+                $(".mask").show();
+                $(".pleaseC").show()
+            } else {
+                $(".mask").show();
+                $(".tipDel").show();
+                $(".cer").click(function () {
+                    $(".th input[type='checkbox']:checked").each(function (c) {
+                        index = $(this).parents(".th").index() - 1;
+                        $(".th").eq(index).remove();
+                        if ($(".th").length == 0) {
+                            $(".table .goOn").show()
+                        }
+                    });
+                    $(".mask").hide();
+                    $(".tipDel").hide();
+                    b();
+                    a()
+                    //批量删除操作
+                    console.log("批量删除")
+                    let user_id = document.getElementById("user_id").innerHTML
+                    let jsonobj = {"user_id":user_id,"products":ShoppingList}
+                    $.ajax({
+                        url: serverhost + "/delCart",
+                        method: "POST",
+                        data: JSON.stringify(jsonobj),
+                        contentType: "application/json;charset=utf-8",
+                        async: true,
+                        dataType:"json",
+                        complete: function (data) {
+                             window.location.href = serverhost+data.responseText
+                        },
+                    })
+                })
+            }
+        }
+    });
     $(".cancel").click(function () {
         $(".mask").hide();
         $(".tipDel").hide()
     })
+    $(".pleaseC .off").click(function () {
+        $(".mask").hide();
+        $(".pleaseC").hide()
+    })
 });
+function checkAll() {
+    $("input[type='checkbox']").each(function () {
+        try{
+            let pamount = $(this).parents(".th").find(".fl")[5].innerHTML
+            let pid = $(this).parents(".th").find("#pid")[0].innerHTML
+            let index = $(this).parents(".th").find("#pindex")[0].innerHTML
+            let obj = {"pid":pid,"productAmount":pamount,"index":index}
+            ShoppingList.push(obj)
+            console.log("add")
+            this.checked = true
+            b();
+            a()
+        }catch (e){}
+    });
+}

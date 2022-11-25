@@ -2,6 +2,7 @@ package com.day.examp3.pojo;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,10 @@ public class User {
   @TableId(value = "user_id",type = IdType.ASSIGN_ID)
   private String userId;
   private String loginName;
+
+  @TableField("nick_name")
   private String nickName;
+
   private String realName;
   private Long gradeId;
   private String password;
@@ -47,9 +51,13 @@ public class User {
   private String lastLoginIp;
   private String area;
   private String headPic;
+  private Integer isAdmin;
 
   public Date getBirthDate(){
 //    if(this.birth.getTime()==null) return new Date(0);
+    if(this.birth==null){
+      this.birth = new Timestamp(new Date().getTime());
+    }
     return new Date(this.birth.getTime());
   }
 

@@ -11,11 +11,18 @@
         <result property="status" column="status"/>
         <result property="orderTime" column="order_time"/>
         <result property="totalPrice" column="total_price"/>
-        <result property="payment" column="payment"/>
         <result property="invoiceId" column="invoice_id"/>
         <result property="receiveAddressId" column="receive_address_id"/>
         <result property="amount" column="amount"/>
         <result property="bak" column="bak"/>
+        <result property="BoundId" column="bound_id"/>
+        <result property="paymentId" column="payment_id"/>
+        <result property="commentId" column="comment_id"/>
+        <association property="payment" javaType="com.day.examp3.pojo.Payment">
+            <id property="paymentId" column="payment_id"/>
+            <result property="payment" column="payment"/>
+            <result property="paymentId" column="payment_id"/>
+        </association>
         <association property="user" javaType="com.day.examp3.pojo.User">
             <id property="userId" column="user_id"/>
             <result property="nickName" column="nick_name"/>
@@ -26,20 +33,21 @@
             <result property="phone" column="phone"/>
             <result property="area" column="area"/>
             <result property="headPic" column="head_pic"/>
+            <result property="isAdmin" column="isAdmin"/>
         </association>
         <association property="receiveAddress" javaType="com.day.examp3.pojo.Address">
             <id property="receiveAddressId" column="receive_address_id"/>
             <result property="userId" column="user_id"/>
             <result property="receiveName" column="receive_name"/>
             <result property="province" column="province"/>
-            <result property="address" column="address"/>
+            <result property="address" column="receive_address"/>
             <result property="zipcode" column="zipcode"/>
             <result property="mobile" column="mobile"/>
             <result property="email" column="email"/>
             <result property="area" column="area"/>
             <result property="isDefault" column="is_default"/>
         </association>
-        <collection property="productList" ofType="com.day.examp3.pojo.Product">
+        <association property="product" javaType="com.day.examp3.pojo.Product">
             <id property="productId" column="product_id"/>
             <result property="name" column="name"/>
             <result property="keywords" column="keywords"/>
@@ -48,18 +56,139 @@
             <result property="description" column="description"/>
             <result property="catalog" column="catalog"/>
             <result property="storage" column="storage"/>
-        </collection>
+        </association>
     </resultMap>
 
-
-    <select id="getFullOrdersByUserId" resultMap="FixedOrder" >
-        select o.*,p.*,u.*,pay.payment
-        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay
+    <insert id="addAllOrders" keyColumn="order_id" keyProperty="orderId" parameterType="com.day.examp3.pojo.Order">
+        insert into lmonkey_order
+        ( order_id,user_id,status
+        ,order_time,total_price,payment_id
+        ,invoice_id,receive_address_id,bak
+        ,product_id,amount,bound_id)
+        values
+        <foreach collection="list" item="order" index="index" separator=",">
+            (
+            #{order.orderId,jdbcType=VARCHAR},#{order.userId,jdbcType=VARCHAR},#{order.status,jdbcType=VARCHAR}
+            ,#{order.orderTime,jdbcType=TIMESTAMP},#{order.totalPrice,jdbcType=INTEGER},#{order.paymentId,jdbcType=INTEGER}
+            ,#{order.invoiceId,jdbcType=INTEGER},#{order.receiveAddressId,jdbcType=INTEGER},#{order.bak,jdbcType=VARCHAR}
+            ,#{order.productId,jdbcType=VARCHAR},#{order.amount,jdbcType=INTEGER},#{order.boundId,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <update id="updateAllOrdersWithAddId" parameterType="java.util.List">
+        UPDATE lmonkey_order
+        SET receive_address_id = CASE
+        <foreach collection="list" item="item" index="index">
+            WHEN order_id = #{item.orderId} THEN #{item.receiveAddressId}
+        </foreach>
+        END
+        WHERE order_id IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item.orderId}
+        </foreach>
+    </update>
+    <update id="updateAllOrdersWithPayId" parameterType="java.util.List">
+        UPDATE lmonkey_order
+        SET payment_id = CASE
+        <foreach collection="list" item="item" index="index">
+            WHEN order_id = #{item.orderId} THEN #{item.paymentId}
+        </foreach>
+        END
+        WHERE order_id IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item.orderId}
+        </foreach>
+    </update>
+    <update id="updateAllOrdersWithStatus" parameterType="java.util.List">
+        UPDATE lmonkey_order
+        SET status = CASE
+        <foreach collection="list" item="item" index="index">
+            WHEN order_id = #{item.orderId} THEN #{item.status}
+        </foreach>
+        END
+        WHERE order_id IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item.orderId}
+        </foreach>
+    </update>
+    <select id="getFullOrdersByUserId"  resultMap="FixedOrder">
+        select distinct o.*,p.*,u.*,pay.*,addr.*
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr
         where o.user_id = #{uid}
+          and o.user_id = u.user_id
+          and o.product_id = p.product_id
+          and o.payment_id = pay.payment_id
+          and o.receive_address_id = addr.receive_address_id
     </select>
-    <select id="getFullOrdersByStatus" resultMap="FixedOrder" >
-        select o.*,p.*,u.*,pay.payment
-        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay
-        where o.user_id = #{uid} and o.status = #{status}
+    <select id="getLastFiveOrdersByUserId"  resultMap="FixedOrder">
+        select distinct o.*,p.*,u.*,pay.*,addr.*
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr
+        where o.user_id = 1
+          and o.user_id = u.user_id
+          and o.product_id = p.product_id
+          and o.payment_id = pay.payment_id
+          and o.receive_address_id = addr.receive_address_id
+        order by order_time DESC limit 5
     </select>
+    <select id="getFullOrdersByStatusWithUid" resultMap="FixedOrder" >
+        select o.*,p.*,u.*,pay.*,addr.*
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr
+        where o.user_id = #{uid}
+          and o.status = #{status}
+          and o.user_id = u.user_id
+          and o.product_id = p.product_id
+          and o.payment_id = pay.payment_id
+          and o.receive_address_id = addr.receive_address_id
+    </select>
+<!--    <select id="getFullOrdersPageByStatus" resultMap="FixedOrder" >-->
+<!--        select o.*,p.*,u.*,pay.*,addr.*-->
+<!--        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr-->
+<!--        where o.status = #{status}-->
+<!--          and o.user_id = u.user_id-->
+<!--          and o.product_id = p.product_id-->
+<!--          and o.payment_id = pay.payment_id-->
+<!--          and o.receive_address_id = addr.receive_address_id-->
+<!--          limit #{curPage},#{pageSize}-->
+<!--    </select>-->
+    <select id="getBoundOrderByUserId" resultMap="FixedOrder" >
+        select o.*,p.*,u.*,pay.*,addr.*
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr
+        where o.user_id = #{uid}
+          and o.bound_id = #{bid}
+          and o.user_id = u.user_id
+          and o.product_id = p.product_id
+          and o.payment_id = pay.payment_id
+          and o.receive_address_id = addr.receive_address_id
+    </select>
+    <select id="queryOrdersByBoundId" resultMap="FixedOrder" >
+        select o.*,p.*,u.*,pay.*,addr.*
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr
+        where o.bound_id = #{bid}
+          and o.user_id = u.user_id
+          and o.product_id = p.product_id
+          and o.payment_id = pay.payment_id
+          and o.receive_address_id = addr.receive_address_id
+    </select>
+    <select id="getUserOrderById" resultMap="FixedOrder" >
+        select o.*,p.*,u.*,pay.*,addr.*
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr
+        where o.user_id = #{uid}
+          and o.order_id = #{oid}
+          and o.user_id = u.user_id
+          and o.product_id = p.product_id
+          and o.payment_id = pay.payment_id
+          and o.receive_address_id = addr.receive_address_id
+    </select>
+    <select id="getUserOrdersByProId" resultMap="FixedOrder" >
+        select o.*,p.*,u.*,pay.*,addr.*
+        from lmonkey_order o ,lmonkey_product p ,lmonkey_user u,lmonkey_payment pay, lmonkey_receive_address addr
+        where o.user_id = #{uid}
+          and o.user_id = u.user_id
+          and o.product_id = #{pid}
+          and o.product_id = p.product_id
+          and o.payment_id = pay.payment_id
+          and o.receive_address_id = addr.receive_address_id
+    </select>
+
+
 </mapper>

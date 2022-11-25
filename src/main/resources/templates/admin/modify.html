@@ -1,0 +1,366 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>后台管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/admin.js" type="text/javascript" charset="utf-8"></script>
+    <style>
+        .context{
+            width: 350px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{common/adminpanel::topbar}"></div>
+<div class="container clearfix">
+    <div th:if="${currentPage}=='user'" >
+        <div th:replace="~{common/adminpanel::adminSilder(active='user')}"></div>
+    </div>
+    <div th:if="${currentPage}=='product'"   >
+        <div th:replace="~{common/adminpanel::adminSilder(active='pro')}"></div>
+    </div>
+    <div th:if="${currentPage}=='order'"   >
+        <div th:replace="~{common/adminpanel::adminSilder(active='order')}"></div>
+    </div>
+    <div th:if="${currentPage}=='address'"   >
+        <div th:replace="~{common/adminpanel::adminSilder(active='add')}"></div>
+    </div>
+    <div th:if="${currentPage}=='comment'"   >
+        <div th:replace="~{common/adminpanel::adminSilder(active='comment')}"></div>
+    </div>
+    <div th:if="${currentPage}=='cateogry'" >
+        <div th:replace="~{common/adminpanel::adminSilder(active='cateogry')}"></div>
+    </div>
+    <!--/sidebar-->
+    <div class="main-wrap">
+        <div class="crumb-wrap">
+            <div th:if="${currentPage}=='user'"
+                    class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a>
+                <span class="crumb-step">&gt;</span><a class="crumb-name" th:href="@{/admin/userPanel}">用户管理</a>
+                <span class="crumb-step">&gt;</span><span>修改用户</span>
+            </div>
+            <div th:if="${currentPage}=='product'"
+                    class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a>
+                <span class="crumb-step">&gt;</span><a class="crumb-name" th:href="@{/admin/productPanel}">产品管理</a>
+                <span class="crumb-step">&gt;</span><span>修改产品</span>
+            </div>
+            <div th:if="${currentPage}=='order'"
+                    class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a>
+                <span class="crumb-step">&gt;</span><a class="crumb-name" th:href="@{/admin/orderPanel}">订单管理</a>
+                <span class="crumb-step">&gt;</span><span>修改订单</span>
+            </div>
+            <div th:if="${currentPage}=='address'"
+                    class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a>
+                <span class="crumb-step">&gt;</span><a class="crumb-name" th:href="@{/admin/addressPanel}">地址管理</a>
+                <span class="crumb-step">&gt;</span><span>修改地址</span>
+            </div>
+            <div th:if="${currentPage}=='comment'"
+                    class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a>
+                <span class="crumb-step">&gt;</span><a class="crumb-name" th:href="@{/admin/commentPanel}">评论管理</a>
+                <span class="crumb-step">&gt;</span><span>修改评论</span>
+            </div>
+            <div th:if="${currentPage}=='category'"
+                 class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a>
+                <span class="crumb-step">&gt;</span><a class="crumb-name" th:href="@{/admin/categoryPanel}">分类管理</a>
+                <span class="crumb-step">&gt;</span><span>修改分类</span>
+            </div>
+        </div>
+        <div class="result-wrap">
+            <div class="result-content" th:if="${currentPage}=='user'">
+                <form th:action="@{/admin/modifyUserReq}" method="post" id="myform" name="myform" enctype="multipart/form-data">
+                    <table class="insert-tab" width="100%">
+                        <tbody>
+                            <tr>
+                                <th>用户ID</th>
+                                <td>
+                                    <input name="userId" th:value="${user.userId}" readonly type="text">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><i class="require-red">*</i>用户昵称:</th>
+                                <td>
+                                    <input required th:value="${user.nickName}" class="common-text required" id="title" name="nickName" size="50" value="" type="text">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><i class="require-red">*</i>用户密码:</th>
+                                <td><input required th:value="${user.password}" class="common-text" name="password" size="50" type="text"></td>
+                            </tr>
+                            <tr>
+                                <th>性别:</th>
+                                <td><input name="sex" type="radio" value="男">男<input name="sex" type="radio" value="女">女</td>
+                            </tr>
+                            <tr>
+                                <th>电子邮箱:</th>
+                                <td><input name="email" th:value="${user.email}" type="text" ></td>
+                            </tr>
+                            <tr>
+                                <th>生日:</th>
+                                <td><input name="formBirth" th:value="${#dates.format(user.getBirthDate(),'yyyy-MM-dd')}" type="date"></td>
+                            </tr>
+                            <tr>
+                                <th>是否为管理员址:</th>
+                                <td><input name="isAdmin" type="radio" value="1">是
+                                    <input name="isAdmin" type="radio" value="0">否
+                                </td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <td>
+                                    <input class="btn btn-primary btn6 mr10" value="提交" type="submit">
+                                    <a th:href="@{/admin/userPanel}" ><input class="btn btn6"   value="返回" type="button"></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="result-content" th:if="${currentPage}=='address'">
+                <form th:action="@{/admin/modifyAddressReq}" method="post" name="myform" enctype="multipart/form-data">
+                    <table class="insert-tab" width="100%">
+                        <tbody>
+                        <tr>
+                            <th>地址ID:</th>
+                            <td>
+                                <input readonly class="common-text required" name="receiveAddressId" size="50" th:value="${address.receiveAddressId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="require-red">*</i>用户ID:</th>
+                            <td>
+                                <input required class="common-text required" name="userId" size="50" th:value="${address.userId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="require-red">*</i>收货人名字:</th>
+                            <td><input required class="common-text" name="receiveName" th:value="${address.receiveName}" size="50" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>省份:</th>
+                            <td><input name="province" th:value="${address.province}" type="text" ></td>
+                        </tr>
+                        <tr>
+                            <th>详细地址:</th>
+                            <td><textarea name="address" class="context"  th:value="${address.address}" type="text" ></textarea></td>
+                        </tr>
+                        <tr>
+                            <th>邮政编码:</th>
+                            <td><input name="zipcode" th:value="${address.zipcode}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>手机号:</th>
+                            <td><input name="mobile" th:value="${address.mobile}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>邮箱:</th>
+                            <td><input name="email" th:value="${address.email}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>地区:</th>
+                            <td><input name="area" th:value="${address.area}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>是否为默认地址:</th>
+                            <td><input name="isDefault" type="radio" value="1">是
+                                <input name="isDefault" type="radio" value="0">否
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <input class="btn btn-primary btn6 mr10" value="提交" type="submit">
+                                <a th:href="@{/admin/addressPanel}" ><input class="btn btn6" value="返回" type="button"></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="result-content" th:if="${currentPage}=='order'">
+                <form th:action="@{/admin/modifyOrderReq}" method="post" name="myform" enctype="multipart/form-data">
+                    <table class="insert-tab" width="100%">
+                        <tbody>
+                        <tr>
+                            <th>订单ID:</th>
+                            <td>
+                                <input readonly class="common-text required" name="orderId" size="50" th:value="${order.orderId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="require-red">*</i>用户ID:</th>
+                            <td>
+                                <input required name="userId" th:value="${order.userId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="require-red">*</i>订单状态:</th>
+                            <td><input required class="common-text" th:value="${order.status}" name="status" size="50" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>总价:</th>
+                            <td><input name="totalPrice" th:value="${order.totalPrice}" type="text" ></td>
+                        </tr>
+                        <tr>
+                            <th>支付方式ID:</th>
+                            <td><input name="paymentId" th:value="${order.paymentId}" type="text" ></td>
+                        </tr>
+                        <tr>
+                            <th>接收地址ID:</th>
+                            <td><input name="receiveAddressId" th:value="${order.receiveAddressId}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>产品ID:</th>
+                            <td><input name="productId" th:value="${order.productId}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>产品数量:</th>
+                            <td><input name="amount" th:value="${order.amount}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>批次ID:</th>
+                            <td><input readonly name="boundId" th:value="${order.boundId}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <input class="btn btn-primary btn6 mr10" value="提交" type="submit">
+                                <a th:href="@{/admin/orderPanel}" ><input class="btn btn6" value="返回" type="button"></a>
+                            </td>
+                        </tr>
+                        </tbody></table>
+                </form>
+            </div>
+            <div class="result-content" th:if="${currentPage}=='product'">
+                <form th:action="@{/admin/modifyProductReq}" method="post" name="myform" enctype="multipart/form-data">
+                    <table class="insert-tab" width="100%">
+                        <tbody>
+                        <tr>
+                            <th>产品ID:</th>
+                            <td>
+                                <input readonly class="common-text required" name="productId" size="50" th:value="${product.productId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="require-red">*</i>产品名字:</th>
+                            <td>
+                                <input required class="common-text required" name="name" size="50" th:value="${product.name}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>单价:</th>
+                            <td><input name="fixedPrice" th:value="${product.fixedPrice}" type="text" ></td>
+                        </tr>
+                        <tr>
+                            <th>关键词:</th>
+                            <td><input name="keywords" th:value="${product.keywords}" type="text" ></td>
+                        </tr>
+                        <tr>
+                            <th><i class="require-red">*</i>描述:</th>
+                            <td><textarea required class="context" name="description">[[${product.description}]]</textarea></td>
+                        </tr>
+                        <tr>
+                            <th>分类:</th>
+                            <td><input name="catalog" th:value="${product.catalog}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>库存:</th>
+                            <td><input name="storage" th:value="${product.storage}" type="text"></td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <input class="btn btn-primary btn6 mr10" value="提交" type="submit">
+                                <a th:href="@{/admin/productPanel}" ><input class="btn btn6" value="返回" type="button"></a>
+                            </td>
+                        </tr>
+                        </tbody></table>
+                </form>
+            </div>
+            <div class="result-content" th:if="${currentPage}=='comment'">
+                <form th:action="@{/admin/modifyCommentReq}" method="post" name="myform" enctype="multipart/form-data">
+                    <table class="insert-tab" width="100%">
+                        <tbody>
+                        <tr>
+                            <th>评论ID:</th>
+                            <td>
+                                <input readonly class="common-text required" name="commentId" size="50" th:value="${comment.commentId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>评论者ID:</th>
+                            <td>
+                                <input required class="common-text required" name="userId" size="50" th:value="${comment.userId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>产品ID:</th>
+                            <td><input name="productId" th:value="${comment.productId}" type="text" ></td>
+                        </tr>
+                        <tr>
+                            <th>评论内容:</th>
+                            <td><textarea name="context" class="context" >[[${comment.context}]]</textarea></td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <input class="btn btn-primary btn6 mr10" value="提交" type="submit">
+                                <a th:href="@{/admin/commentPanel}" ><input class="btn btn6" value="返回" type="button"></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="result-content" th:if="${currentPage}=='category'">
+                <form id="category-form" method="post" name="myform" enctype="multipart/form-data">
+                    <table class="insert-tab" width="100%">
+                        <tbody>
+                        <tr>
+                            <th>分类id:</th>
+                            <td>
+                                <input readonly class="common-text required" name="categoryId" size="50" th:value="${category.categoryId}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>父分类ID:</th>
+                            <td>
+                                <input required class="common-text parent_id" name="parentCategory" size="50" th:value="${category.parentCategory}" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>父分类名称:</th>
+                            <td><input class="parent_name" name="parentName" th:value="${category.parentName}" type="text" >
+                                <p class="parent-text" style="display: none;color: red"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>子分类ID:</th>
+                            <td><input class="children_id" name="childrenCategory" th:value="${category.childrenCategory}" type="text" ></td>
+                        </tr>
+                        <tr>
+                            <th>子分类名称:</th>
+                            <td><input class="children_name"  name="childrenName" th:value="${category.childrenName}" type="text" >
+                                <p class="children-text" style="display: none;color: red"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <input class="btn btn-primary btn6 mr10 category-sumbit" value="提交" type="button">
+                                <a th:href="@{/admin/categoryPanel}" ><input class="btn btn6" value="返回" type="button"></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--/main-->
+</div>
+</body>
+</html>

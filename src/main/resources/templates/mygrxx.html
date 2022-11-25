@@ -5,13 +5,13 @@
     <title>个人信息</title>
     <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/mygrxx.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/button.css"/>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script>
-        var serverhost = "http://localhost:8080"
         function uploadFile() {
             var file = $("#file")[0].files[0];
             var formData = new FormData();
             formData.append("file", file);
-            console.log(formData)
             $.ajax({
                 type:"post",
                 enctype: 'multipart/form-data',
@@ -19,25 +19,28 @@
                 processData:false,
                 contentType:false,
                 data:formData,
+                dataType:'json',
                 success:function (data) {
-                    console.log(data);
-                    if(data === "200"){
+                    if(data.code === "200"){
                         alert("修改成功,注意刷新缓存")
+                        window.location.reload()
                     }else {
-                        alert("修改失败,虽然我也不知道为什么")
+                        alert(data.msg)
                     }
 
                 }
             })
         }
-
     </script>
+    <style>
+
+    </style>
 </head>
 <body><!------------------------------head------------------------------>
 <div th:replace="~{common/usernavbar::top}"></div>
 <!------------------------------idea------------------------------>
 <div class="address mt">
-    <div class="wrapper clearfix"><a href="index.html" class="fl">首页</a><span>/</span><a href="mygxin.html" class="on">个人信息</a>
+    <div class="wrapper clearfix"><a th:href="@{/main}" class="fl">首页</a><span>/</span><a th:href="@{/user/profile}" class="on">个人信息</a>
     </div>
 </div><!------------------------------Bott------------------------------>
 <div class="Bott">
@@ -64,36 +67,44 @@
 <div class="bj">
     <div class="clearfix"><a href="#" class="fr gb"><img src="/static/img/icon4.png"/></a></div>
     <h3>编辑基础资料</h3>
-    <form th:action="@{/user/updateBaseInfo}" method="post">
+    <form id="base-info-form">
+        <input style="display: none" th:value="${user.userId}" name="userId">
         <p><label>姓名：</label><input type="text" name="username" th:value="${user.nickName}"/></p>
-        <p><label>生日：</label><input name="birth" type="text" th:value="${#dates.format(user.birth, 'yyyy-MM-dd')}"/></p>
-        <p><label>性别：</label><span><input type="radio" name="sex" value="男" checked/>男</span><span><input value="女" type="radio"/>女</span></p>
-        <div class="bc"><input type="submit" value="保存"/><input type="button" value="取消"/></div>
+        <p><label>生日：</label><input style="width: auto;height: 25px" id="datepicker" class="birth" name="birth" type="text" th:value="${#dates.format(user.birth, 'yyyy-MM-dd')}"/></p>
+        <p><label>性别：</label><span><input style="width: 20px;height: 20px"  type="radio" name="sex" value="男" checked/>男</span><span><input style="width: 20px;height: 20px" class="radio" value="女" type="radio"/>女</span></p>
+        <div class="bc"><input id="sumbit" type="button" value="保存"/><input type="button" value="取消"/></div>
     </form>
 </div>
 <!--高级设置修改-->
 <div class="xg">
     <div class="clearfix"><a href="#" class="fr gb"><img src="/static/img/icon4.png"/></a></div>
     <h3>切换账号地区</h3>
-    <form th:action="@{/user/updateArea}" method="post"><p><label>地区：</label><input type="text" name="area" th:value="${user.getArea()}"/></p>
-        <div class="bc"><input type="submit" value="保存"/><input type="button" value="取消"/></div>
+    <form id="changeAddress">
+        <input style="display: none" th:value="${user.userId}" name="userId">
+        <p><label>地区：</label><input class="add"  type="text" name="area" th:value="${user.getArea()}"/></p>
+        <div class="bc"><input id="addsumbit" type="button" value="保存"/><input type="button" value="取消"/></div>
     </form>
-</div><!--修改头像-->
+</div>
+<!--修改头像-->
 <div class="avatar">
     <div class="clearfix"><a class="fr gb"><img src="/static/img/icon4.png"/></a></div>
     <h3>修改头像</h3>
-    <h4>请上传图片</h4>
-    <form action="#" method="get"><h4>请上传图片</h4>
+    <form action="#" method="get">
+        <h4>请上传图片</h4>
         <input type="button" onclick="file.click()" value="上传头像"/>
         <input id="file" type="file" style="display: none">
-        <p>jpg或png，大小不超过2M</p>
-        <input type="button" onclick="uploadFile()" value="提交"/></form>
-</div><!--返回顶部-->
+        <p>只支持png图片，大小不超过5M</p>
+        <input class="btn btn-success" style="position: relative;left: 29%;width: 40%;" type="button" onclick="uploadFile()" value="提交"/>
+    </form>
+</div>
+<!--返回顶部-->
 <div th:replace="~{common/usernavbar::user-gotop}"></div>
 <!--footer-->
 <div th:replace="~{common/usernavbar::footer}"></div>
-<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/jq-3.6.0.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/user.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/mygrxx.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 </body>
 </html>

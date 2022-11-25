@@ -5,36 +5,91 @@
     <title>个人信息</title>
     <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/mygrxx.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/user.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/mima.js" type="text/javascript" charset="utf-8"></script>
+    <style>
+        .msg-warn{
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
+    <script>
+        var flag = false;
+        var uid
+        window.onload=function () {
+            uid = document.getElementById("user--id").innerHTML
+        }
+        function changeToPwd() {
+            if(flag){
+                document.getElementById("email-confirm").setAttribute("style","display: none")
+                document.getElementById("password-confirm").setAttribute("style","display: block")
+                flag = false
+            }
+        }
+        function changeToEmail() {
+            if(!flag){
+                flag = true;
+                document.getElementById("password-confirm").setAttribute("style","display: none")
+                document.getElementById("email-confirm").setAttribute("style","display: block")
+            }
+        }
+    </script>
 </head>
 <body><!------------------------------head------------------------------>
 <div th:replace="~{common/usernavbar::top}"></div>
+<p style="display: none" th:text="${session.user_id}" id="user--id" ></p>
 <!------------------------------idea------------------------------>
 <div class="address mt">
-    <div class="wrapper clearfix"><a href="index.html" class="fl">首页</a><span>/</span><a href="mygxin.html" class="on">个人信息</a>
+    <div class="wrapper clearfix"><a th:href="@{/main}" class="fl">首页</a><span>/</span><a th:href="@{/user/profile}" class="on">个人信息</a>
     </div>
 </div><!------------------------------Bott------------------------------>
 <div class="Bott">
     <div class="wrapper clearfix">
         <div th:replace="~{common/usernavbar::user-left-navbar(active='remima')}"></div>
-        <div class="you fl"><h2>修改密码</h2>
-            <form th:action="@{/user/resetPwd/{uid}(uid=${session.user_id})}" method="get" class="remima"><p><span>选择验证身份方式：</span><input type="checkbox" checked/>密码验证 <input
-                    type="checkbox"/>邮箱验证</p>
-                <p><span>原密码：</span><input id="orgPwd" name="oldPassword" type="text"/></p>
-                <p class="op">输入原密码</p>
-                <p><span>新密码：</span><input id="newPwd" name="newPassword" type="text"/></p>
-                <p class="op">6-16 个字符，需使用字母、数字或符号组合，不能使用纯数字、纯字母、纯符号</p>
-                <p><span>重复新密码：</span><input id="confirmPwd" type="text"/></p>
-                <p class="op">请再次输入密码</p>
-                <p><span>验证码：</span><input type="text"/><img src="/static/img/temp/code.jpg" alt=""/></p>
-                <p class="op">按右图输入验证码，不区分大小写</p><input type="submit" value="提交"/></form>
+        <div class="you fl">
+            <h2>修改密码</h2>
+            <p class="way"><span>选择验证身份方式：</span>
+            <input onclick="changeToPwd()" name="type" id="radio-1" type="radio" checked/>密码验证
+                <input id="radio-2" name="type" onclick="changeToEmail()"  type="radio"/>邮箱验证
+            </p>
+            <div id="password-confirm">
+                <form class="password-form remima" method="get">
+                    <p class="op msg-warn" style="color: red;" ></p>
+                    <input class="method" value="password" name="method" style="display: none"/>
+                    <p><span>原密码：</span><input class="orgPwd" name="oldPassword" type="text"/></p>
+                    <p class="op">输入原密码</p>
+                    <p><span>新密码：</span><input class="newPwd" name="newPassword" type="text"/></p>
+                    <p class="op">6-16 个字符，需使用字母、数字和符号组合，不能使用纯数字、纯字母、纯符号</p>
+                    <p><span>重复新密码：</span><input class="confirmPwd" name="confirmPwd" type="text"/></p>
+                    <p class="op">请再次输入密码</p>
+                    <p><span>验证码：</span><input name="code" type="text"/><img class="vertifycode" onclick="this.src='/createCapt?'+Math.random()" src="/createCapt" alt=""/></p>
+                    <p class="op">按右图输入验证码，不区分大小写</p>
+                    <input class="sumbit" type="button" value="提交"/>
+                </form>
+            </div>
+            <div id="email-confirm" style="display: none">
+                <form class="password-form remima" method="get">
+                    <p class="op msg-warn" style="color: red;" ></p>
+                    <input class="method" value="email" name="method" style="display: none"/>
+                    <p><span>邮箱：</span><input class="email" name="email" type="text"/></p>
+                    <p class="op">输入你的邮箱</p>
+                    <p><span>验证码：</span><input name="code" type="text"/><img class="vertifycode" onclick="this.src='/createCapt?'+Math.random()" src="/createCapt" alt=""/></p>
+                    <p class="op">按右图输入验证码，不区分大小写</p><input class="sumbit" type="button" value="提交"/></form>
+            </div>
+            <div id="show-email" style="display: none" >
+                <form action="#" method="post" class="remima">
+                    <p>电子邮箱：<span class="user-email"></span></p>
+                    <p class="tip">新的密码已经发在您的邮箱当中,注意修改</p>
+                    <a th:href="@{/login}" ><input type="button" value="登录" class="next1"></a>
+                </form>
+            </div>
         </div>
     </div>
 </div><!--返回顶部-->
 <div th:replace="~{common/usernavbar::user-gotop}"></div>
 <!--footer-->
 <div th:replace="~{common/usernavbar::footer}"></div>
-<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
-<script src="/static/js/user.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>

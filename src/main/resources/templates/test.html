@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/mygrxx.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/button.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="mask" style="display: block;"></div>
+<div class="avatar" style="display: block" >
+    <div class="clearfix"><a class="fr gb"><img src="/static/img/icon4.png"/></a></div>
+    <h3>修改头像</h3>
+    <form action="#" method="get">
+        <h4>请上传图片</h4>
+        <input type="button" onclick="file.click()" value="上传头像"/>
+        <input id="file" type="file" style="display: none">
+        <p>png，大小不超过5M</p>
+        <input class="btn btn-success" type="button" onclick="uploadFile()" value="提交"/>
+    </form>
+</div>
+</body>
+</html>

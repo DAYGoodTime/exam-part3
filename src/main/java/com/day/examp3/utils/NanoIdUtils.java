@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 import java.security.SecureRandom;
 import java.util.Random;
 
+/**
+ * 用于生成随机字符的工具类
+ */
 @Component
 public class NanoIdUtils {
     public static final SecureRandom DEFAULT_NUMBER_GENERATOR = new SecureRandom();
@@ -22,12 +25,12 @@ public class NanoIdUtils {
 
     public static String randomNanoId(Random random, char[] alphabet, int size) {
         if (random == null) {
-            throw new IllegalArgumentException("random cannot be null.");
+            return randomNanoId(DEFAULT_NUMBER_GENERATOR,alphabet,size);
         } else if (alphabet == null) {
-            throw new IllegalArgumentException("alphabet cannot be null.");
+            return randomNanoId(random,DEFAULT_ALPHABET,size);
         } else if (alphabet.length != 0 && alphabet.length < 256) {
-            if (size <= 0) {
-                throw new IllegalArgumentException("size must be greater than zero.");
+            if (size <= 0 ) {
+                return randomNanoId(random,alphabet,DEFAULT_SIZE);
             } else {
                 int mask = (2 << (int)Math.floor(Math.log((double)(alphabet.length - 1)) / Math.log(2.0D))) - 1;
                 int step = (int)Math.ceil(1.6D * (double)mask * (double)size / (double)alphabet.length);

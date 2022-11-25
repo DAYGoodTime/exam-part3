@@ -1,0 +1,138 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>后台管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8" ></script>
+    <script src="/static/js/admin.js" type="text/javascript" charset="utf-8" ></script>
+    <script>
+        window.onload=function () {
+            ObjectList = []
+        }
+        function delALL() {
+            if(ObjectList.length===0){
+                return
+            }
+            let obj = {"files":ObjectList}
+            $.ajax({
+                url: serverhost + "/admin/delSqlBKReq",
+                method: "POST",
+                contentType: "application/json;charset=utf-8",
+                data:JSON.stringify(obj),
+                async: false,
+                dataType:"json",
+                success: function (data) {
+                    if(data.code==="200"){
+                        alert("删除成功")
+                        window.location.reload()
+                    }else {
+                        alert(data.msg)
+                    }
+                },
+            })
+        }
+    </script>
+</head>
+<body>
+<div th:replace="~{common/adminpanel::topbar}"></div>
+<div class="container clearfix">
+    <div th:replace="~{common/adminpanel::adminSilder(active='backup')}"></div>
+    <!--/sidebar-->
+    <div class="main-wrap">
+        <div class="crumb-wrap">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span class="crumb-step">&gt;</span><span class="crumb-name">系统设置</span></div>
+        </div>
+        <div class="result-wrap">
+            <form action="#" method="post" id="myform" name="myform">
+                <div class="config-items">
+                    <div class="config-title">
+                        <h1><i class="icon-font">&#xe00a;</i>网站配置设置</h1>
+                    </div>
+                    <div class="result-content">
+                        <table width="100%" class="insert-tab">
+                            <tbody>
+                            <tr>
+                                <th>数据库备份路径</th>
+                                <td><input readonly class="common-text sql-path" type="text" th:value="${sqlPath}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>数据库备份周期</th>
+                                <td>
+                                    <select class="Cycle">
+                                        <option value="day">每日备份一次</option>
+                                        <option value="week">每周备份一次</option>
+                                        <option value="mounth">每月备份一次</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>备份的数据库大小(已压缩)</th>
+                                <td><input readonly type="text" class="check-box backup-size" th:value="${totalSize}"></td>
+                            </tr>
+                            <tr>
+                                <th>操作</th>
+                                <td>
+                                    <input type="button" value="保存设置" class="btn save btn-primary btn6 mr10">
+                                    <input type="button" value="返回" onClick="history.go(-1)" class="btn btn6">
+                                    <input type="button" value="立即备份" onclick="backupNow()" class="btn save btn-primary btn6 mr10">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="config-items">
+                    <div class="config-title">
+                        <h1><i class="icon-font">&#xe00a;</i>数据库备份列表</h1>
+                        <div class="result-list">
+                            <a class="batchDel" href="javascript:delALL()"><i class="icon-font"></i>批量删除</a>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <table class="result-tab" width="100%">
+                            <tr>
+                                <th class="tc" width="5%"><input class="checkAll" type="checkbox"></th>
+                                <th>备份文件名</th>
+                                <th>备份时间</th>
+                                <th>备份大小</th>
+                                <th>操作</th>
+                            </tr>
+                            <tr th:each="file:${files}">
+                                <td class="tc"><input class="ids" name="id[]" th:value="${file.getName()}" type="checkbox"></td>
+                                <td th:text="${file.getName()}"></td>
+                                <td th:text="${#dates.format(new java.util.Date(file.lastModified()), 'yyyy年MM月dd HH时mm分ss秒')}"></td>
+                                <td th:text="${#numbers.formatDecimal(file.length()/1024,3, 'COMMA', 2,'POINT')}+'KB'" ></td>
+                                <td>
+                                    <a class="link-del del-bk" th:href="@{/admin/delSqlBK/{name}(name=${file.getName()})}">删除</a>
+                                    <p style="display: none;" th:text="${file.getName()}" class="fileName" ></p>
+                                    <a class="link-del recovery" style="cursor: pointer" >恢复到此时间点的数据</a>
+                                </td>
+                            </tr>
+                        </table>
+<!--                        <ul class="wb">-->
+<!--                            <li class="totals" th:text="'总共:'+${Totals}+'个用户'"></li>-->
+<!--                            <a th:href="@{/admin/userPanel/{curPage}(curPage=${curPage}-1)}">-->
+<!--                                <li th:if="${curPage}!=1" >上一页</li></a>-->
+<!--                            <tr th:each="page:${#numbers.sequence(Findex,Lindex)}">-->
+<!--                                <a class="page"-->
+<!--                                   th:href="@{/admin/userPanel/{curPage}(curPage=${page})}"-->
+<!--                                   th:if="${page}!=${curPage} and ${page}>=${Findex} and ${page}<=${Lindex}">-->
+<!--                                    <li class="page" th:text="${page}" th:if="${page}!=${curPage}"></li>-->
+<!--                                </a>-->
+<!--                                <li class="page curPage" th:text="${page}" th:if="${page}==${curPage}"></li>-->
+<!--                            </tr>-->
+<!--                            <a th:href="@{/admin/userPanel/{curPage}(curPage=${curPage}+1)}">-->
+<!--                                <li th:if="${curPage}!=${TotalPages}" >下一页</li></a>-->
+<!--                        </ul>-->
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--/main-->
+</div>
+</body>
+</html>

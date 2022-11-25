@@ -2,118 +2,169 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head lang="en">
     <meta charset="utf-8"/>
-    <title>order</title>
+    <title>确认订单</title>
     <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/proList.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/mygxin.css"/>
+    <script th:inline="javascript">
+        //为每个地址盒子添加监听事件
+        window.onload1=function () {
+            getLocation()
+            const count = [[${addressList.size()}]]//要多少个盒子
+            const addobj = [[${addressList}]]
+            let user_id = $("#pageUid").text()
+            document.querySelector(".adddz").querySelector("input").value = user_id
+            let dizhis = document.querySelectorAll(".addre")
+            for (let i = 0; i < dizhis.length; i++) {
+                //设置默认事件
+                let isDefault = dizhis[i].querySelector(".isDefault").innerHTML
+                if(isDefault === "0"){
+                    let addId = dizhis[i].querySelector(".boxaddId").innerHTML;
+                    dizhis[i].querySelector(".setDefault").addEventListener("click",function () { //监听设置默认地址
+                        let obj = {"method":"setDefault","receiveAddressId":addId,"userId":user_id}
+                        let json = JSON.stringify(obj)
+                        $.ajax({
+                            url: serverhost + "/updateAddress",
+                            method: "POST",
+                            contentType: "application/json;charset=utf-8",
+                            data:json,
+                            async: true,
+                            dataType:"json",
+                            success: function (data) {
+                                console.log(data.code)
+                                if(data.code==="200"){
+                                    alert("更新成功")
+                                    window.location.reload()
+                                }else alert(data.msg)
+                            },
+                        })
+                    })
+                }
+                //删除事件
+                dizhis[i].querySelector(".adddel").addEventListener("click",function () {
+                    let isDefault  = dizhis[i].querySelector(".isDefault").innerHTML;
+                    if(isDefault==="1"){
+                        alert("默认地址不允许删除")
+                        return null
+                    }else {
+                        let addId = dizhis[i].querySelector(".boxaddId").innerHTML;
+                        let obj = {"addId":addId,"user_id":user_id}
+                        let json = JSON.stringify(obj)
+                        $.ajax({
+                            url: serverhost + "/delAddress",
+                            method: "post",
+                            contentType: "application/json;charset=utf-8",
+                            data:json,
+                            async: true,
+                            dataType:"json",
+                            success: function (data) {
+                                console.log(data.code)
+                                if(data.code==="200"){
+                                    alert("删除成功")
+                                    dizhis[i].remove()
+                                }else alert(data.msg)
+                            },
+                        })
+                    }
+                })
+
+
+            }
+            var orders = document.querySelectorAll(".orders")
+            var total = 0
+            for (let i = 0; i < orders.length; i++) {
+                total = total + parseFloat(orders[i].querySelector(".orderprice").innerHTML)
+            }
+            document.querySelector(".orderTotal").innerHTML ='￥ '+ total
+            document.querySelector(".PriceTotal").innerHTML ='￥ '+total
+        }
+
+    </script>
 </head>
 <body><!----------------------------------------order------------------>
 <div th:replace="~{common/usernavbar::top}"></div>
+<p style="display: none" id="pageUid" th:text="${session.user_id}"></p>
 <div class="order cart mt"><!-----------------site------------------->
     <div class="site"><p class="wrapper clearfix"><span class="fl">订单确认</span><img class="top"
                                                                                    src="/static/img/temp/cartTop02.png"></p>
-    </div><!-----------------orderCon------------------->
+    </div>
+    <!-----------------orderCon------------------->
     <div class="orderCon wrapper clearfix">
         <div class="orderL fl"><!--------h3----------------><h3>收件信息<a id="addxad" class="fr">新增地址</a></h3>
             <!--------addres---------------->
             <div class="addres clearfix">
                 <tr th:each="add:${addressList}">
-                    <div class="addre fl on" th:if="${add.isDefault}==1" >
+                    <div class="addre fl on" th:if="${add.isDefault}==1">
+                        <p style="display: none" class="boxaddId" th:text="${add.receiveAddressId}" ></p>
+                        <p style="display: none" class="isDefault" th:text="${add.isDefault}" ></p>
                         <div class="tit clearfix">
-                            <p class="fl" th:text="${add.getReceiveName()}">
-                                <span th:if="${add.isDefault}==1"  class="default">[默认地址]</span>
-                                <span th:text="${add.receiveAddressId}" id="addId" style="display: none" ></span>
+                            <p class="fl">
+                                <span th:text="${add.receiveName}"></span>
+                                <span class="default" >[默认地址]</span>
                             </p>
-                            <p class="fr">
-                                <a href="#">删除</a> <!-- TODO 删除地址功能 -->
-                                <span>|</span><a href="#" class="edit">编辑</a></p> <!--TODO修改地址功能 -->
-                        </div>
-                        <div class="addCon"><p th:text="${add.getAddress()}" ></p>
-                            <p th:text="${add.getMobile()}"></p>
-                        </div>
+                            <p class="fr"><a href="#" class="adddel" >删除</a><span>|</span><a href="#" class="edit">编辑</a></p></div>
+                        <div class="addCon"><p th:text="${add.address}"></p>
+                            <p th:text="${add.mobile}"></p></div>
                     </div>
-                    <div class="addre fl" th:if="${add.isDefault}==0" >
-                        <div class="tit clearfix">
-                            <p class="fl" th:text="${add.getReceiveName()}">
-                            <span th:text="${add.receiveAddressId}" id="addId" style="display: none" ></span>
-                            </p>
-                            <p class="fr">
-                                <a href="#" class="setDefault">设为默认</a><span>|</span> <!--TODO 设置默认地址 -->
-                                <a href="#">删除</a> <!-- TODO 删除地址功能 -->
-                                <span>|</span><a href="#" class="edit">编辑</a></p> <!--TODO 修改地址功能 -->
+                    <div class="addre fl" th:if="${add.isDefault}==0">
+                        <p style="display: none" class="boxaddId" th:text="${add.receiveAddressId}" ></p>
+                        <p style="display: none" class="isDefault" th:text="${add.isDefault}" ></p>
+                        <div class="tit clearfix"><p class="fl" th:text="${add.receiveName}" ></p>
+                            <p class="fr"><a href="#" class="setDefault">设为默认</a>
+                                <span>|</span>
+                                <a href="#" class="adddel" >删除</a>
+                                <span>|</span><a href="#" class="edit">编辑</a></p>
                         </div>
-                        <div class="addCon"><p th:text="${add.getAddress()}" ></p>
-                            <p th:text="${add.getMobile()}"></p>
+                        <div class="addCon"><p th:text="${add.address}"></p>
+                            <p th:text="${add.mobile}"></p>
                         </div>
                     </div>
                 </tr>
             </div>
             <h3>支付方式</h3>
             <!--------way---------------->
-            <div class="way clearfix"><img class="on" src="/static/img/temp/way02.jpg"><img src="/static/img/temp/way04.jpg"></div>
+            <div class="way clearfix">
+                <img th:class="${orders.get(0).paymentId}==1?'on':'ffo'" id="1"  src="/static/img/temp/way02.jpg">
+                <img th:class="${orders.get(0).paymentId}==3?'on':'ffo'" id="3" src="/static/img/temp/way01.jpg">
+            </div>
             <h3>选择快递</h3><!--------dis---------------->
             <div class="dis clearfix">
-                <tr th:each="deilver:${delivers}">
-                    <span class="on" th:text="${deilver.deliverName}" th:if="${deilverStat.first}"></span>
-                    <span  th:text="${deilver.deliverName}" th:if="!${deilverStat.first}"></span>
+                <tr th:each="deliver:${delivers}">
+                    <span class="on" th:text="${deliver.deliverName}" th:if="${deliverStat.first}"></span>
+                    <span  th:text="${deliver.deliverName}" th:if="!${deliverStat.first}"></span>
                 </tr>
             </div>
         </div>
         <div class="orderR fr">
-            <div class="msg"><h3>订单内容<a th:href="@{user/cartList}" class="fr">返回购物车</a></h3>
+            <div class="msg">
+                <p id="boundId" th:text="${boundId}" style="display: none" ></p>
+                <h3>订单内容<a th:href="@{user/cartList}" class="fr">返回购物车</a></h3>
                 <!--------ul---------------->
-                <tr th:each="pro:${order.getProductList()}">
-                <ul class="clearfix">
-                    <li class="fl"><img height="87px" width="87px"  th:src="${pro.picture}"></li>
-                    <li class="fl">
-                        <p th:text="${pro.name}" ></p>
-                        <p th:text="${pro.catalog}" ></p>
-                        <p th:text="'数量:'+${pro.o_amount}"></p></li>
-                    <li class="fr" th:text="'￥'+${pro.fixedPrice}*${pro.o_amount}" ></li>
-                </ul>
+                <tr th:each="order:${orders}">
+                    <ul class="clearfix orders">
+                        <li class="fl"><img height="87px" width="87px"  th:src="${order.product.picture}"></li>
+                        <li class="fl">
+                            <p th:text="${order.product.name}" ></p>
+                            <p th:text="${order.product.catalog}" ></p>
+                            <p th:text="'数量:'+${order.amount}"></p>
+                            <p style="display: none" th:text="${order.product.productId}"></p>
+                        </li>
+                        <li class="fr" th:text="'￥'+${order.product.fixedPrice}*${order.amount}" ></li>
+                        <li class="fr orderprice" style="display: none" th:text="${order.product.fixedPrice}*${order.amount}" ></li>
+                    </ul>
                 </tr>
-
             </div><!--------tips---------------->
-            <div class="tips"><p><span class="fl">商品金额：</span><span class="fr">￥139.80</span></p>  <!-- TODO 商品金额统计 -->
-                <p><span class="fl">优惠金额：</span><span class="fr">￥0.00</span></p>
+            <div class="tips"><p><span class="fl">商品金额：</span><span class="fr PriceTotal" ></span></p>
+                <p><span class="fl">优惠金额：</span><span class="fr">￥0.00</span></p> <!-- TODO 优惠设置 -->
                 <p><span class="fl">运费：</span><span class="fr">免运费</span></p></div><!--------tips count---------------->
-            <div class="count tips"><p><span class="fl">合计：</span><span class="fr">￥139.80</span></p></div> <!-- TODO 商品金额统计 -->
-            <!--<input type="button" name="" value="去支付">--> <a th:href="@{/order/ok}" class="pay">去支付</a></div>
+            <div class="count tips"><p><span class="fl">合计：</span><span class="fr orderTotal"></span></p></div>
+            <!--<input type="button" name="" value="去支付">--> <a href="#" class="pay">去支付</a></div>
     </div>
-</div><!--编辑弹框--><!--遮罩-->
-<div class="mask"></div>
+</div>
 <!--编辑弹框--><!--遮罩-->
 <div class="mask"></div>
-<div class="adddz">
-    <form action="#" method="get"><input type="text" placeholder="姓名" class="on"/><input type="text" placeholder="手机号"/>
-        <div class="city"><select name="">
-            <option value="省份/自治区">省份/自治区</option>
-        </select><select>
-            <option value="城市/地区">城市/地区</option>
-        </select><select>
-            <option value="区/县">区/县</option>
-        </select><select>
-            <option value="配送区域">配送区域</option>
-        </select></div>
-        <textarea name="" rows="" cols="" placeholder="详细地址"></textarea><input type="text" placeholder="邮政编码"/>
-        <div class="bc"><input type="button" value="保存"/><input type="button" value="取消"/></div>
-    </form>
-</div>
-<div class="adddz editAddre">
-    <form action="#" method="get"><input type="text" placeholder="姓名" class="on"/><input type="text" placeholder="手机号"/>
-        <div class="city"><select name="">
-            <option value="省份/自治区">省份/自治区</option>
-        </select><select>
-            <option value="城市/地区">城市/地区</option>
-        </select><select>
-            <option value="区/县">区/县</option>
-        </select><select>
-            <option value="配送区域">配送区域</option>
-        </select></div>
-        <textarea name="" rows="" cols="" placeholder="详细地址"></textarea><input type="text" placeholder="邮政编码"/>
-        <div class="bc"><input type="button" value="保存"/><input type="button" value="取消"/></div>
-    </form>
-</div>
+<div th:replace="~{common/usernavbar::maskAdd}"></div>
+<div th:replace="~{common/usernavbar::maskreadd}"></div>
 <!--返回顶部-->
 <div th:replace="~{common/usernavbar::user-gotop}"></div>
 <!--footer-->
@@ -122,5 +173,6 @@
 <script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/pro.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/user.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/order.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>

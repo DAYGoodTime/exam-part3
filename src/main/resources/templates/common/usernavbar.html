@@ -3,12 +3,20 @@
 <head>
   <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
   <link rel="stylesheet" type="text/css" href="/static/css/index.css"/>
+  <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/static/js/user.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/static/js/address.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+
+  </script>
 </head>
 <body>
 <!--用户页面的坐标bar-->
 <div class="zuo fl" th:fragment="user-left-navbar">
   <h3><a href="#"><img width="92px" height="92px" th:src="${session.user_img}"/></a>
-    <p class="clearfix"><span class="fl" th:text="'[' +${session.username}+ ']'"></span><a th:href="@{/logout}"><span class="fr">[退出登录]</span></a></p></h3>
+    <p class="clearfix"><span class="fl" style="width: 140px"  th:text="'[' +${session.username}+ ']'">
+    </span><a onclick="logout()"><span style="margin: -8px 29px" class="fr">[退出登录]</span></a></p></h3>
   <div><h4>我的交易</h4>
     <ul>
       <li th:class="${active=='cart'?'on':''}"><a th:href="@{/user/cartList}">我的购物车</a></li>
@@ -29,8 +37,9 @@
 </div>
 <div class="gotop" th:fragment="user-gotop" >
   <a th:href="@{/user/cartList}">
+    <p id="shopping-number" style="display: none;" th:text="${session.userShoppings}" ></p>
   <dl>
-    <dt><img src="/static/img/gt1.png"/></dt>
+    <dt class="gwc"><img src="/static/img/gt1.png"/></dt>
     <dd>去购<br/>物车</dd>
   </dl>
 </a><a th:href="@{/user/cartList}" class="dh">
@@ -66,68 +75,137 @@
   </div>
   <p class="dibu">最家家居&copy;2013-2017公司版权所有 京ICP备080100-44备0000111000号<br/>
     违法和不良信息举报电话：400-800-8200，本网站所列数据，除特殊说明，所有数据均出自我司实验室测试</p></div>
-<div class="head" th:fragment="top"  >
+<div class="head" th:fragment="top" >
   <div class="wrapper clearfix">
-    <div class="clearfix" id="top"><h1 class="fl"><a th:href="@{/main}"><img src="/static/img/logo.png"/></a></h1>
+    <div class="clearfix" id="top">
+      <h1 class="fl">
+        <a th:href="@{/main}"><img src="/static/img/logo.png"/></a></h1>
       <div class="fr clearfix" id="top1">
-        <p class="fl" th:if="${session.username}==null" ><a th:href="@{/user/login}" id="login">登录</a><a th:href="@{/user/register}" id="reg">注册</a>
+        <p class="fl" th:if="${session.username}==null" ><a th:href="@{/login}" id="login">登录</a><a th:href="@{/register}" id="reg">注册</a>
         </p>
         <p class="fl" th:if="${session.username}!=null" th:text="'欢迎到来:'+${session.username}">
         </p>
-        <form action="#" method="get" class="fl"><input type="text" placeholder="搜索"/><input type="button"/>
+        <form id="searchform" th:action="@{/main/search}" method="get" class="fl">
+          <input name="search" type="text" placeholder="搜索"/>
+          <input id="searchBtn" type="button"/>
+          <input id="searchsumbit" type="submit" style="display: none" >
         </form>
         <div class="btn fl clearfix"><a th:href="@{/user/profile}"><img src="/static/img/grzx.png"/></a><a href="#" class="er1"><img
                 src="/static/img/ewm.png"/></a><a th:href="@{/user/cartList}"><img src="/static/img/gwc.png"/></a>
-          <p><a href="#"><img src="/static/img/smewm.png"/></a></p></div>
+            <a th:href="@{/admin}" th:if="${session.isAdmin}==1" >
+            <img width="20px" height="20px" src="/static/img/admin.png"/></a><p><a href="https://github.com/DAYGoodTime"><img src="/static/img/myQR.png"/></a></p>
+          </div>
       </div>
     </div>
     <ul class="clearfix" id="bott">
       <li><a th:href="@{/main}">首页</a></li>
       <li><a href="#">所有商品</a>
         <div class="sList">
-          <div class="wrapper  clearfix"><a th:href="@{/paint}">
-            <dl>
-              <dt><img src="/static/img/nav1.jpg"/></dt>
-              <dd>浓情欧式</dd>
-            </dl>
-          </a><a th:href="@{/paint}">
-            <dl>
-              <dt><img src="/static/img/nav2.jpg"/></dt>
-              <dd>浪漫美式</dd>
-            </dl>
-          </a><a th:href="@{/paint}">
-            <dl>
-              <dt><img src="/static/img/nav3.jpg"/></dt>
-              <dd>雅致中式</dd>
-            </dl>
-          </a><a th:href="@{/paint}">
-            <dl>
-              <dt><img src="/static/img/nav6.jpg"/></dt>
-              <dd>简约现代</dd>
-            </dl>
-          </a><a th:href="@{/paint}">
-            <dl>
-              <dt><img src="/static/img/nav7.jpg"/></dt>
-              <dd>创意装饰</dd>
-            </dl>
-          </a>
+          <div id="all-pro" class="wrapper  clearfix">
+
           </div>
         </div>
       </li>
-      <li><a th:href="@{/flowerDer}">装饰摆件</a>
-        <div class="sList2">
-          <div class="clearfix"><a th:href="@{/flowerDer/proList}">干花花艺</a><a th:href="@{/flowerDer/vaseProList}">花瓶花器</a></div>
-        </div>
-      </li>
-      <li><a th:href="@{/decoration}">布艺软饰</a>
-        <div class="sList2">
-          <div class="clearfix"><a th:href="@{/decoration/zbproList}">桌布罩件</a><a th:href="@{/decoration/zbproList}">抱枕靠垫</a></div>
-        </div>
-      </li>
-      <li><a th:href="@{/paint}">墙式壁挂</a></li>
-      <li><a th:href="@{/perfume}">蜡艺香薰</a></li>
-      <li><a th:href="@{/idea}">创意家居</a></li>
     </ul>
+  </div>
+</div>
+<div class="adddz" th:fragment="maskAdd">
+  <form action="#" id="addressform" method="post">
+    <input style="display: none" name="uid" id="uid"/>
+    <input type="text" name="name" placeholder="姓名" class="on"/>
+    <input type="text" name="phone" placeholder="手机号"/>
+    <div class="city">
+      <select id="province" name="province" >
+        <option  value="0">中国</option>
+      </select><select name="city" id="city">
+      <option  value="101">城市/地区</option>
+    </select><select name="county" id="county">
+      <option value="101">区/县</option>
+    </select><select >
+      <option>配送区域</option>
+    </select></div>
+    <textarea name="address" class="addressText"  rows="" cols="" placeholder="详细地址"></textarea><input name="zipcode" type="text" placeholder="邮政编码"/>
+    <div class="bc"><input id="addAddress" type="button" value="保存"/><input type="button" value="取消"/></div>
+  </form>
+</div>
+<div class="readd" th:fragment="maskreadd">
+  <form action="#" id="addressform2" method="post">
+    <input style="display: none" name="uid" id="uid2"/>
+    <input style="display: none" name="addId" id="addId"/>
+    <input type="text" name="name" placeholder="姓名" class="on"/>
+    <input type="text" name="phone" placeholder="手机号"/>
+    <div class="city">
+      <select id="province2" name="province" >
+        <option  value="0">中国</option>
+      </select><select name="city" id="city2">
+      <option  value="101">城市/地区</option>
+    </select><select name="county" id="county2">
+      <option value="101">区/县</option>
+    </select><select >
+      <option>配送区域</option>
+    </select></div>
+    <textarea name="address" class="addressText"  rows="" cols="" placeholder="详细地址"></textarea><input name="zipcode" type="text" placeholder="邮政编码"/>
+    <div class="bc"><input id="addAddress2" type="button" value="保存"/><input type="button" value="取消"/></div>
+  </form>
+</div>
+<div class="proDets" th:fragment="maskPro" >
+  <img class="off" src="/static/img/temp/off.jpg"/>
+  <div class="tit clearfix">
+    <p id="pid" style="display: none" ></p>
+    <h4 class="fl pname">【最家】非洲菊仿真花干花</h4><span class="fr pprice"></span></div>
+  <div class="proCon clearfix">
+    <div class="proImg fl"><img class="list ppicture0"  width="360px" height="360px" src="/static/img/temp/proDet.jpg"/>
+      <div class="smallImg clearfix">
+        <img class="ppicture1" style="height: 85px;width: 85px;"  src="/static/img/temp/proDet01.jpg">
+        <img class="ppicture2" style="height: 85px;width: 85px;"  src="/static/img/temp/proDet02.jpg">
+        <img class="ppicture3" style="height: 85px;width: 85px;"  src="/static/img/temp/proDet03.jpg">
+        <img class="ppicture4" style="height: 85px;width: 85px;"  src="/static/img/temp/proDet04.jpg">
+      </div>
+    </div>
+    <div class="fr">
+      <div class="proIntro">
+        <p>颜色分类</p>
+        <div class="smallImg clearfix categ">
+          <p class="fl"><img class="c1"  src="/static/img/temp/prosmall01.jpg" alt="白瓷花瓶+20支快乐花"></p>
+          <p class="fl"><img class="c2" src="/static/img/temp/prosmall02.jpg" alt="白瓷花瓶+20支兔尾巴草"></p>
+          <p class="fl"><img class="c3" src="/static/img/temp/prosmall03.jpg" alt="20支快乐花"></p>
+          <p class="fl"><img class="c4" src="/static/img/temp/prosmall04.jpg" alt="20支兔尾巴草"></p>
+        </div>
+        <p>数量&nbsp;&nbsp;库存<span class="pstorge" ></span>件</p>
+        <div class="num clearfix"><img class="fl sub" src="/static/img/temp/sub.jpg">
+          <span class="fl" id="proAmount" contentEditable="true">1</span><img
+                  class="fl add" src="/static/img/temp/add.jpg">
+          <p class="please fl">请选择商品属性!</p></div>
+      </div>
+      <div class="btns clearfix"><a href="#"><p class="buy fl">立即购买</p></a><a class="addtocart" href="#2"><p class="cart fr">
+        加入购物车</p></a></div>
+    </div>
+  </div>
+  <a class="more" href="proDetail.html">查看更多细节</a></div>
+<div class="msgR fr" th:fragment="recommend" >
+  <h4>为你推荐</h4>
+  <div class="seeList">
+
+  </div>
+</div>
+<div class="like" th:fragment="guess">
+  <h4>猜你喜欢</h4>
+  <div class="bottom">
+    <div class="hd">
+            <span class="prev">
+            <img src="/static/img/temp/prev.png">
+            </span>
+      <span class="next">
+                <img src="/static/img/temp/next.png">
+            </span>
+    </div>
+    <div class="imgCon bd">
+      <div class="likeList clearfix">
+        <div class="like-box">
+
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 </body>

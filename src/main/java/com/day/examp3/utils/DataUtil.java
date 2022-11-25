@@ -6,11 +6,22 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
-
+/**
+ * 日期格式工具类
+ */
 public class DataUtil {
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    public static final SimpleDateFormat Fsdf_cn = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
+
+    //设置时区,默认为北京时区
+    static {
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        Fsdf_cn.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+    }
 
     public static Timestamp StringToStamp(String data){
         try {
@@ -24,5 +35,13 @@ public class DataUtil {
     public static String DataToString(Date date){
         return sdf.format(date);
     }
+    public static String DataToString(Date date,SimpleDateFormat sdf){
+        return sdf.format(date);
+    }
+
+    public static String getCurrentTimeAsString(){
+        return DataToString(new Date());
+    }
+
 
 }

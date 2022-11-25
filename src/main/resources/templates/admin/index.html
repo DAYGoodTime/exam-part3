@@ -1,0 +1,137 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>后台</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/progress-bar.css">
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8" ></script>
+    <script th:inline="javascript">
+        const serverhost = "http://localhost:8080"
+        function getSysInfo() {
+            $.ajax({
+                url: serverhost + "/admin/getSysInfo",
+                method: "POST",
+                contentType: "application/json;charset=utf-8",
+                async: true,
+                dataType:"json",
+                success: function (data) {
+                    if(data.code==="200"){
+                        let disk =  data.data.disk;
+                        let memory =  data.data.mem;
+                        let cpu_info = data.data.cpu;
+                        let disk_percent = (disk.Free.slice(0,-2)/disk.Total.slice(0,-2)).toFixed(2)
+                        let memory_percent = (memory.Used.slice(0,-2)/memory.Total.slice(0,-2)).toFixed(2)
+                        $(".disk").text(disk.Free+"/"+disk.Total).css("width",disk_percent*100+"%")
+                        $(".memory").text(memory.Used+"/"+memory.Total).css("width",memory_percent*100+"%")
+                        $(".cpu").text(cpu_info.CPU_used).css("width",cpu_info.CPU_used)
+                    }
+
+                },
+            })
+        }
+
+        window.onload=function () {
+
+            getSysInfo();
+            setInterval(function() { getSysInfo() }, 5000);
+        }
+    </script>
+</head>
+<body>
+<p style="display: none"></p>
+<div class="topbar-wrap white">
+    <div th:replace="~{common/adminpanel::topbar}"></div>
+</div>
+<div class="container clearfix">
+    <div>
+        <div th:replace="~{common/adminpanel::adminSilder}"></div>
+    </div>
+    <!--/sidebar-->
+    <div class="main-wrap">
+        <div class="crumb-wrap">
+            <div class="crumb-list"><i class="icon-font">&#xe06b;</i><span></span></div>
+        </div>
+        <div class="result-wrap">
+            <div class="result-title">
+                <h1>快捷操作</h1>
+            </div>
+            <div class="result-content">
+                <div class="short-wrap">
+                    <a th:href="@{/admin/addUser}"><i class="icon-font">&#xe001;</i>新增用户</a>
+                    <a th:href="@{/admin/addAddress}"><i class="icon-font">&#xe005;</i>新增地址</a>
+                    <a th:href="@{/admin/addProduct}"><i class="icon-font">&#xe048;</i>新增产品</a>
+                    <a th:href="@{/admin/addOrder}"><i class="icon-font">&#xe041;</i>新增订单</a>
+                    <a th:href="@{/admin/addComment}"><i class="icon-font">&#xe01e;</i>新增评论</a>
+                </div>
+            </div>
+        </div>
+        <div class="result-wrap">
+            <div class="result-title">
+                <h1>系统基本信息</h1>
+            </div>
+            <div class="result-content">
+                <ul class="sys-info-list">
+                    <li>
+                        <label class="res-lab">操作系统</label><span class="res-info" th:text="${sysName}" ></span>
+                    </li>
+                    <li>
+                        <label class="res-lab">运行环境</label><span class="res-info" th:text="${sysName}+'/'+${sysVer}+'('+${arch}+')'" ></span>
+                    </li>
+                    <li>
+                        <label class="res-lab">JVM版本</label><span class="res-info" th:text="${javaVersion}"></span>
+                    </li>
+                    <li>
+                        <label class="res-lab">极光工作室-版本</label><span class="res-info">v-0.1</span>
+                    </li>
+                    <li>
+                        <label class="res-lab">上传附件限制</label><span class="res-info" th:text="${FileUploadSize}"></span>
+                    </li>
+                    <li>
+                        <label class="res-lab">北京时间</label><span class="res-info" th:text="${data}"></span>
+                    </li>
+                    <li>
+                        <label class="res-lab">服务器域名/IP</label><span class="res-info" th:text="${host}"></span>
+                    </li>
+                    <li>
+                        <label class="res-lab">CPU占用</label>
+                        <div class="progress" style="display: inline-flex;width:200px;">
+                            <div class="cpu progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar"
+                                 aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"></div>
+                        </div>
+                    </li>
+                    <li>
+                        <label class="res-lab">内存占用</label>
+                        <div class="progress" style="display: inline-flex;width:200px;">
+                            <div class="memory progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                 aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"></div>
+                        </div>
+                    </li>
+                    <li>
+                        <label class="res-lab">硬盘可用空间</label>
+                        <div class="progress" style="display: inline-flex;width:200px;">
+                            <div class="disk progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar"
+                                 aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="result-wrap">
+            <div class="result-title">
+                <h1>使用帮助</h1>
+            </div>
+            <div class="result-content">
+                <ul class="sys-info-list">
+                    <li>
+                        <label class="res-lab">更多模板：</label><span class="res-info"><a href="http://www.lmonkey.com/" target="_blank">学习猿地</a></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--/main-->
+</div>
+</body>
+</html>

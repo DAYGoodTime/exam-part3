@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>『学习猿地』后台管理</title>
+	<link rel="stylesheet" type="text/css" href="/static/css/admin_login.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/admin.js" type="text/javascript" charset="utf-8"></script>
+    <style>
+        .msg-warn {
+            position: relative;
+            background: #fef4e5;
+            color: red;
+            display: inline-block;
+            border: 1px solid #f6c090;
+            padding: 3px 31px 3px 31px;
+            line-height: 15px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="admin_login_wrap">
+    <h1>后台管理</h1>
+    <div class="adming_login_border">
+        <div class="admin_input">
+            <form id="admin-form">
+                <ul class="admin_items">
+                    <li>
+                        <div class="msg-warn" style="display: none"></div>
+                        <label for="user">用户名或邮箱：</label>
+                        <input type="text" name="username" value="admin" id="user" size="40" class="admin_input_style" />
+                    </li>
+                    <li>
+                        <label for="pwd">密码：</label>
+                        <input type="password" name="pwd" value="admin" id="pwd" size="40" class="admin_input_style" />
+                    </li>
+                    <li>
+                        <input type="checkbox" name="rememberMe" value="true" class="check-box" />自动登录
+                    </li>
+                    <li>
+                        <input id="admin-sumbit" type="button" tabindex="3" value="提交" class="btn btn-primary" />
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+    <p class="admin_copyright"><a tabindex="5" href="#" target="_blank">返回首页</a> &copy; 2014 Powered by 更多模板：<a href="http://www.lmonkey.com/" target="_blank">学习猿地</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.day.examp3.mapper.ProductMapper">
+
+<!--    <select id="queryByKeyWords" resultType="com.day.examp3.pojo.Product">-->
+<!--        select * from lmonkey_product  where lmonkey_product.keywords in-->
+<!--        <foreach collection="keywords" item="keyword"  open="(" separator="," close=")">-->
+<!--            #{keyword}-->
+<!--        </foreach>-->
+<!--    </select>-->
+    <select id="queryProductByMultiKeyWordWithDesc" resultType="com.day.examp3.pojo.Product">
+        select * from lmonkey_product
+        WHERE keywords IN
+        <foreach collection="list" index="index" item="keyword" open="(" separator="," close=")">
+            #{keyword}
+        </foreach>
+        order by fixed_price desc
+    </select>
+    <select id="queryProductByMultiKeyWordWithAsce" resultType="com.day.examp3.pojo.Product">
+        select * from lmonkey_product
+        WHERE keywords IN
+        <foreach collection="list" index="index" item="keyword" open="(" separator="," close=")">
+            #{keyword}
+        </foreach>
+        order by fixed_price
+    </select>
+</mapper>
+
+
+
+

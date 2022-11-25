@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>修改密码</title>
+	<link rel="stylesheet" type="text/css" href="/static/css/admin_login.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/forget.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/static/js/admin.js" type="text/javascript" charset="utf-8"></script>
+    <style>
+        .msg-warn {
+            position: relative;
+            background: #fef4e5;
+            color: red;
+            display: inline-block;
+            border: 1px solid #f6c090;
+            padding: 3px 31px 3px 31px;
+            line-height: 15px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="admin_login_wrap">
+    <h1>重置密码</h1>
+    <div class="adming_login_border">
+        <div class="admin_input">
+            <form id="pwd-form">
+                <ul class="admin_items">
+                    <li>
+                        <div class="msg-warn" style="display: none"></div>
+                        <label for="email">邮箱地址：</label>
+                        <input type="text" name="email" id="email" size="40" class="admin_input_style" />
+                    </li>
+                    <li>
+                        <label for="pwd">验证码：</label>
+                        <input type="text" name="code" id="pwd" size="40" class="admin_input_style" />
+                        <img src="/createCapt" onclick="this.src='/createCapt?'+Math.random()"/>
+                    </li>
+                    <li>
+                        <input id="pwd-sumbit" type="button" tabindex="3" value="提交" class="btn btn-primary" />
+                    </li>
+                </ul>
+            </form>
+            <form style="display: none" method="post" class="two"><p>电子邮箱：<span class="user-email" ></span></p>
+                <p class="tip">新的密码已经发在您的邮箱当中,注意修改</p>
+                <a th:href="@{/login}" >
+                    <input type="button" style="width: 50px;height: 30px;border-color: whitesmoke;color: white" value="登录" class="next1"></a>
+            </form>
+        </div>
+    </div>
+    <p class="admin_copyright"><a tabindex="5" th:href="@{/main}">返回首页</a> &copy; 2014 Powered by 更多模板：<a href="http://www.lmonkey.com/" target="_blank">学习猿地</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>ご覧のスポンサーの提供でお送りします</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8" ></script>
+    <script>
+        !function (e, t, a) {
+            function r() {
+                for (var e = 0; e < s.length; e++) s[e].alpha <= 0 ? (t.body.removeChild(s[e].el), s.splice(e, 1)) : (s[
+                    e].y--, s[e].scale += .004, s[e].alpha -= .013, s[e].el.style.cssText = "left:" + s[e].x +
+                    "px;top:" + s[e].y + "px;opacity:" + s[e].alpha + ";transform:scale(" + s[e].scale + "," + s[e]
+                        .scale + ") rotate(45deg);background:" + s[e].color + ";z-index:99999");
+                requestAnimationFrame(r)
+            }
+
+            function n() {
+                var t = "function" == typeof e.onclick && e.onclick;
+                e.onclick = function (e) {
+                    t && t(), o(e)
+                }
+            }
+
+            function o(e) {
+                var a = t.createElement("div");
+                a.className = "heart", s.push({
+                    el: a,
+                    x: e.clientX - 5,
+                    y: e.clientY - 5,
+                    scale: 1,
+                    alpha: 1,
+                    color: c()
+                }), t.body.appendChild(a)
+            }
+
+            function i(e) {
+                var a = t.createElement("style");
+                a.type = "text/css";
+                try {
+                    a.appendChild(t.createTextNode(e))
+                } catch (t) {
+                    a.styleSheet.cssText = e
+                }
+                t.getElementsByTagName("head")[0].appendChild(a)
+            }
+
+            function c() {
+                return "rgb(" + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + "," + ~~(255 * Math
+                    .random()) + ")"
+            }
+            var s = [];
+            e.requestAnimationFrame = e.requestAnimationFrame || e.webkitRequestAnimationFrame || e
+                .mozRequestAnimationFrame || e.oRequestAnimationFrame || e.msRequestAnimationFrame || function (e) {
+                setTimeout(e, 1e3 / 60)
+            }, i(
+                ".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"
+            ), n(), r()
+        }(window, document);
+    </script></script>
+    <style>
+        .fastjson:hover{
+            color: black !important;
+        }
+        .insert-tab th{
+            width: 20%;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+<body>
+<div th:replace="~{common/adminpanel::topbar}"></div>
+<div class="container clearfix">
+    <div th:replace="~{common/adminpanel::adminSilder(active='sponsor')}"></div>
+    <!--/sidebar-->
+    <div class="main-wrap">
+        <div class="crumb-wrap">
+            <div class="crumb-list"><i class="icon-font"></i><a th:href="@{/admin}">首页</a><span class="crumb-step">&gt;</span><span class="crumb-name">系统设置</span></div>
+        </div>
+        <div class="result-wrap">
+            <form action="#" method="post" id="myform" name="myform">
+                <div class="config-items">
+                    <div class="config-title">
+                        <h1><i class="icon-font">&#xe00a;</i>~第三方工具~</h1>
+                    </div>
+                    <div class="result-content">
+                        <table width="100%" class="insert-tab">
+                            <tbody>
+                            <tr>
+                                <th>JSON处理</th>
+                                <td>
+                                    <a href="https://github.com/alibaba/fastjson" ><img src="/static/img/adv/fastjson.png" alt="这都能图裂?" title="我知道fastjson不彳,但是这个项目无关紧要"></a><br>
+                                    <span class="fastjson" style="text-decoration: line-through;font-size: xx-small;background-color: white;color: white">我知道fastjson不彳,但是这个项目无关紧要</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>图片压缩处理:OpenViewerFX</th>
+                                <td>
+                                    <a href="https://mvnrepository.com/artifact/org.jpedal/OpenViewerFX/6.8.22" ><img src="/static/img/adv/OpenViewerFX.png" alt="啊对对对" ></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>60%的工具类活(文件,URL,验证码等工具类)</th>
+                                <td>
+                                    <a href="https://www.hutool.cn/docs/index.html#/" ><img src="/static/img/adv/hutool.png" alt="开摆" title="hutool YYDS"></a>
+                                </td>
+                            </tr>
+                                <tr>
+                                    <th>云服务,对象存储服务</th>
+                                    <td>
+                                        <a href="https://cloud.tencent.com/product/cos"><img src="/static/img/adv/cloud.png" title="tx在这方面还算可以" ></a>
+                                    </td>
+                                </tr>
+                            <tr>
+                                <th>微信支付平台</th>
+                                <td>
+                                    <a href="https://www.shazure.com/"><img src="/static/img/adv/wechat.png" title="能用就行" ></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>支付宝支付平台</th>
+                                <td>
+                                    <a href="https://open.alipay.com/"><img src="/static/img/adv/aily.png" title="彳吧" ></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="config-items">
+                    <div class="config-title">
+                        <!-- TODO 其他可配置设置? -->
+                    </div>
+                    <div class="result-content">
+                        <!-- TODO 其他可配置设置? -->
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--/main-->
+</div>
+</body>
+</html>

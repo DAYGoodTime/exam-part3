@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="utf-8"/>
+    <title>最家</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/myorder.css"/>
+    <script>
+    </script>
+</head>
+<body><!------------------------------head------------------------------>
+<div th:replace="common/usernavbar::top"></div>
+<!------------------------------idea------------------------------>
+<div class="address mt">
+    <div class="wrapper clearfix"><a th:href="@{/main}" class="fl">首页</a><span>/</span><a th:href="@{/user/profile}" class="on">个人中心</a><span>/</span><a
+            th:href="@{user/collection}" class="on">收藏的商品</a></div>
+</div><!------------------------------Bott------------------------------>
+<div class="Bott">
+    <div class="wrapper clearfix">
+        <div th:replace="~{common/usernavbar::user-left-navbar(active='mygrxin')}"></div>
+        <div class="you fl">
+            <div class="my clearfix"><h2 class="fl">收藏的商品</h2></div>
+            <div class="sList"></div>
+            <div class="sx clearfix">
+                    <div class="clearfix">
+                        <tr th:if="${CollectionList.size()}!=0" th:each="coll:${CollectionList}">
+                            <dl class="fl">
+                                <dd id="coll-id" style="display: none" th:text="${coll.get('collection_id')}" ></dd>
+                                <dd class="uid" th:text="${coll.get('user_id')}" style="display: none"></dd>
+                                <dd class="pid" th:text="${coll.get('pid')}" style="display: none"></dd>
+                                <dt><a th:href="@{/proDetail/{pid}(pid=${coll.get('pid')})}">
+                                    <img width="162px" height="200px" th:src="${coll.get('product').getPicture()}"/></a>
+                                </dt>
+                                <dd th:text="${coll.get('product').getName()}" ></dd>
+                                <dd th:text="'¥'+${coll.get('product').getFixedPrice()}"></dd>
+                                <dd><a class="delColl" >取消收藏</a></dd>
+                            </dl>
+                        </tr>
+                        <dd th:if="${CollectionList.size()}==0" >收藏空空如也~,<a th:href="@{/main}" >去逛逛把</a></dd>
+                        <dd style="display: none" class="empty" >收藏空空如也~,<a th:href="@{/main}" >去逛逛把</a></dd>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--返回顶部-->
+<div th:replace="~{common/usernavbar::user-gotop}"></div>
+<!--footer-->
+<div th:replace="~{common/usernavbar::footer}"></div>
+<script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/user.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

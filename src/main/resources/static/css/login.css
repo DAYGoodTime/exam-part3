@@ -23,7 +23,7 @@ html, body {
 
 .login form, .reg form {
     position: fixed;
-    top: 15%;
+    top: 5%;
     right: 140px;
     padding: 20px 0;
     text-align: center;
@@ -45,13 +45,13 @@ html, body {
 .login form {
     top: 18%;
     border: 1px solid #dbdbdb;
-    width: 440px;
-    height: 310px;
+    width: 450px;
+    height: 332px;
 }
 
 .reg form {
-    width: 480px;
-    height: 490px;
+    width: 580px;
+    height: auto;
     background: #fff;
 }
 
@@ -62,6 +62,7 @@ html, body {
 
 .reg form p, .login form p {
     margin-top: 15px;
+    position: relative;
 }
 
 .reg form a.off, .login form a.off {
@@ -77,6 +78,11 @@ html, body {
 }
 
 .reg form input[type="text"], .login form input[type="text"] {
+    border: 1px solid #dbdbdb;
+    font-size: 20px;
+    padding-left: 10px;
+}
+.reg form input[type="password"], .login form input[type="password"] {
     border: 1px solid #dbdbdb;
     font-size: 20px;
     padding-left: 10px;
@@ -99,9 +105,12 @@ div.reg form p.txtL {
 }
 
 div.reg form p.txtL img {
-    width: 97px;
-    height: 37px;
+    width: 120px;
+    height: 50px;
+    position: absolute;
+    top: -9px;
     vertical-align: middle;
+    right: -6px;
 }
 
 div.reg form p.txtL a {
@@ -114,7 +123,7 @@ div.reg form p.txtL a {
     text-align: right;
 }
 
-.reg p.txt a, .login p.txt a, {
+.reg p.txt a, .login p.txt a{
     color: #666;
     text-decoration: underline;
 }

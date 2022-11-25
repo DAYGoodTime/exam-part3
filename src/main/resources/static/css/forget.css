@@ -57,7 +57,7 @@
 .forCon form input[type="button"] {
     width: 120px;
     color: #fff;
-    background: #ddd;
+    background: #c71b1b;
     cursor: pointer;
 }
 
@@ -71,7 +71,7 @@ form p:first-child span {
 }
 
 form.two input[type="button"] {
-    background: #c10000;
+    background: #c32e2e;
 }
 
 form.three label {

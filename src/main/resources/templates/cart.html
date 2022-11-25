@@ -5,16 +5,17 @@
     <title>购物车列表</title>
     <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/proList.css"/>
-    <script>
+    <script th:inline="javascript">
         var currentPid;
-        const serverhost = "http://localhost:8080";
         var ShoppingList = [];
 
-        window.onload=function (){
-            if ($(".th").length == 0) {
+        window.onload1=function (){
+            if ($(".th").length === 0) {
                 $(".table .goOn").show()
             }
-
+            let user_id = [[${session.user_id}]]
+            console.log(user_id)
+            document.getElementById("user_id").innerHTML = user_id.toString()
         }
         
         function goToOrder() {
@@ -26,8 +27,19 @@
                 contentType: "application/json;charset=utf-8",
                 async: true,
                 dataType:"json",
-                complete: function (data) {
-                    window.location.href = serverhost+data.responseText
+                complete: function (obj) {
+                    let data = {}
+                    data = obj.responseJSON
+                   if(data.code==="200"){
+                       window.location.href = serverhost + data.data
+                   }else {
+                       if(data.msg==="请先设置您的默认地址"){
+                           alert(data.msg)
+                           window.location.href = serverhost + "/user/address"
+                       }else {
+                           alert(data.msg)
+                       }
+                   }
                 },
                 }
             )
@@ -56,7 +68,6 @@
                     dataType:"json",
                     success: function (data) {
                         console.log(data)
-                        alert("删除成功")
                     },
                 }
             )
@@ -65,6 +76,7 @@
 </head>
 <body><!--------------------------------------cart--------------------->
 <div th:replace="~{common/usernavbar::top}"></div>
+<p style="display: none" id="user_id"></p>
 <form id="proOrder" style="display: none" >
     <input>
 </form>
@@ -103,9 +115,9 @@
                 <div class="price" th:text="'￥'+${promap.get('fixedPrice')}"></div>
                 <div class="number"><p class="num clearfix">
                     <img class="fl sub" src="/static/img/temp/sub.jpg">
-                    <span th:name="${promap.get('productId')}+'-proCount'"  class="fl">1</span>
+                    <span th:text="${promap.get('amount')}" class="fl">1</span>
                     <img class="fl add" src="/static/img/temp/add.jpg"></p></div>
-                <div class="price sAll" th:text="'￥'+${promap.get('fixedPrice')}"></div>
+                <div class="price sAll" th:text="'￥'+(${promap.get('fixedPrice')}*${promap.get('amount')})"></div>
                 <div class="price"><a class="del"
                                       th:data-id="${promap.get('productId')}"
                                       onclick="getPid(this.getAttribute('data-id'))" >删除</a></div>
@@ -113,7 +125,7 @@
         </tr>
         <div class="goOn">空空如也~<a th:href="@{/main}">去逛逛</a></div>
         <div class="tr clearfix"><label class="fl"><input class="checkAll" type="checkbox"/><span></span></label>
-            <p class="fl"><a href="#">全选</a><a href="#" class="del">删除</a></p>
+            <p class="fl"><a href="#" class="choiceAll" >全选</a><a href="#" class="delAll">删除</a></p>
             <p class="fr"><span>共<small id="sl">0</small>件商品</span><span>合计:&nbsp;<small id="all">￥0.00</small></span><a
                 href="#"   onclick="goToOrder()" class="count">结算</a></p></div>
     </div>
@@ -151,7 +163,6 @@
 <div class="pleaseC"><p>请选择宝贝</p><img class="off" src="/static/img/temp/off.jpg"/></div>
 <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/public.js" type="text/javascript" charset="utf-8"></script>
-<script src="/static/js/pro.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/cart.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>

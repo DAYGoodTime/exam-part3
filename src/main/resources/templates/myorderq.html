@@ -5,6 +5,11 @@
     <title>最家</title>
     <link rel="stylesheet" type="text/css" href="/static/css/public.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/myorder.css"/>
+    <script>
+        function clickSearch() {
+            document.getElementById("#searchbtn").click()
+        }
+    </script>
 </head>
 <body><!------------------------------head------------------------------>
 <div th:replace="~{common/usernavbar::top}"></div>
@@ -20,18 +25,16 @@
             <div class="my clearfix"><h2 class="fl">我的订单</h2><a href="#" class="fl">请谨防钓鱼链接或诈骗电话，了解更多&gt;</a></div>
             <div class="dlist clearfix">
                 <ul class="fl clearfix" id="wa">
-                    <!-- TODO 搜索功能 -->
-                    <li class="on"><a th:href="@{/user/myOrder}">全部有效订单</a></li>
-                    <li><a th:href="@{/user/myOrder/待支付}">待支付</a></li>
-                    <li><a th:href="@{/user/myOrder/待收货}">待收货</a></li>
-                    <li><a th:href="@{/user/myOrder/已关闭}">已关闭</a></li>
+                    <li th:class="${status}==null?'on':'off'"><a th:href="@{/user/myOrder}">全部有效订单</a></li>
+                    <li th:class="${status}=='待支付'?'on':'off'"><a th:href="@{/user/myOrder/待支付}">待支付</a></li>
+                    <li th:class="${status}=='待收货'?'on':'off'"><a th:href="@{/user/myOrder/待收货}">待收货</a></li>
+                    <li th:class="${status}=='已完成'?'on':'off'"><a th:href="@{/user/myOrder/已完成}">已完成</a></li>
                 </ul>
-                <!-- TODO 搜索功能 -->
                 <form th:action="@{/user/myOrder}" method="get" class="fr clearfix">
                     <input type="text" name="search" id="search" value=""
                            placeholder="请输入商品名称、订单号"/>
-                    <input type="button" onclick="searchbtn.click()" id="click search"/>
-                    <input type="submit" name="searchbtn" style="display: none" >
+                    <input type="button" onclick="clickSearch()"/>
+                    <input type="submit" id="#searchbtn" style="display: none" >
                 </form>
             </div>
             <!-- dkuang = 已收货
@@ -39,32 +42,33 @@
                 dkuang deng 待支付
              -->
             <tr th:each="order:${orders}">
-                <div class="dkuang" th:if="${order.status}=='已收货' or ${order.status}=='已关闭' ">
+                <div class="dkuang" th:if="${order.status}=='已收货' or ${order.status}=='已完成' ">
                     <p class="one" th:text="${order.status}"></p>
                     <div class="word clearfix">
                         <ul class="fl clearfix">
                             <li th:text="${#dates.format(order.getDateTime(),'yyyy年MM月dd日 HH:mm:ss')}"></li>
                             <li th:text="${order.user.nickName}"></li>
                             <li th:type="'订单号:'+${order.orderId}"></li>
-                            <li th:text="${order.payment}"></li>
+                            <li th:text="${order.payment.payment}"></li>
                         </ul>
-                        <p class="fr">订单金额：<span th:text="${order.totalPrice}"></span>元</p>
+                        <p class="fr">订单金额：<span th:text="${order.totalPrice}*${order.amount}"></span>元</p>
                     </div>
-                    <td th:each="pro:${order.getProductList()}">
                         <div class="shohou clearfix">
-                            <a th:href="@{/proDetail/{pid}(pid=${pro.productId})}" class="fl">
-                                <img th:src="${pro.picture}"/></a>
+                            <a th:href="@{/proDetail/{pid}(pid=${order.product.productId})}" class="fl">
+                                <img th:src="${order.product.picture}"/></a>
                             <p class="fl">
-                                <a th:href="@{/proDetail/{pid}(pid=${pro.productId})}" th:text="${pro.name}" ></a>
-                                <a href="#" th:text="'¥'+${pro.fixedPrice}+'x'+${pro.o_amount}"></a></p>
-                            <p class="fr" th:if="${proStat.first}"><a href="#">确认收货</a><a href="orderxq.html">订单详情</a></p>
+                                <a th:href="@{/proDetail/{pid}(pid=${order.product.productId})}" th:text="${order.product.name}" ></a>
+                                <a href="#" th:text="'¥'+${order.product.fixedPrice}+'x'+${order.amount}"></a></p>
+                            <p class="fr">
+                                <a th:if="${order.status}=='已收货'">待评价</a>
+                                <a th:if="${order.status}=='已完成'" >已完成</a>
+                                <a th:href="@{/user/OrderDetail/{oid}(oid=${order.orderId})}">订单详情</a></p><!-- TODO 订单详情 -->
                         </div>
-                    </td>
                 </div>
                 <div class="dkuang clearfix deng" th:if="${order.status}=='待收货'">
                     <p class="one fl">待收货</p>
                     <div class="clearfix">
-                        <div class="fl vewwl"><a href="wuliu.html" class="ckwl">查看物流</a>
+                        <div class="fl vewwl"><a href="#" class="ckwl">查看物流</a>
                             <div class="wuliu"><h4>圆通速递：858888888888888</h4>
                                 <ul>
                                     <li><p>妥投投递并签收，已签收。签收人：本人签收</p>
@@ -73,7 +77,7 @@
                                         <p>2016-12-03 08:50:00</p></li>
                                     <li><p>到达广东省邮政速递物流有限公司深圳航空邮件处理中心处理中心（经转）</p>
                                         <p>2016-12-03 02:20:00</p></li>
-                                    <li>以上为最新跟踪信息<a href="wuliu.html">查看全部</a></li>
+                                    <li>以上为最新跟踪信息<a href="#">查看全部</a></li>
                                 </ul>
                             </div>
                         </div> <!-- TODO 快递信息 -->
@@ -83,20 +87,18 @@
                             <li th:text="${#dates.format(order.getDateTime(),'yyyy年MM月dd日 HH:mm:ss')}"></li>
                             <li th:text="${order.user.nickName}"></li>
                             <li th:type="'订单号:'+${order.orderId}"></li>
-                            <li th:text="${order.payment}"></li>
+                            <li th:text="${order.payment.payment}"></li>
                         </ul>
-                        <p class="fr">订单金额：<span th:text="${order.totalPrice}"></span>元</p>
+                        <p class="fr">订单金额：<span th:text="${order.totalPrice}*${order.amount}"></span>元</p>
                     </div>
-                    <td th:each="pro:${order.getProductList()}">
-                        <div class="shohou clearfix">
-                            <a th:href="@{/proDetail/{pid}(pid=${pro.productId})}" class="fl">
-                                <img th:src="${pro.picture}"/></a>
-                            <p class="fl">
-                                <a th:href="@{/proDetail/{pid}(pid=${pro.productId})}" th:text="${pro.name}" ></a>
-                                <a href="#" th:text="'¥'+${pro.fixedPrice}+'x'+${pro.o_amount}"></a></p>
-                            <p class="fr" th:if="${proStat.first}"><a href="#">确认收货</a><a href="orderxq.html">订单详情</a></p>
-                        </div>
-                    </td>
+                    <div class="shohou clearfix">
+                        <a th:href="@{/proDetail/{pid}(pid=${order.product.productId})}" class="fl">
+                            <img th:src="${order.product.picture}"/></a>
+                        <p class="fl">
+                            <a th:href="@{/proDetail/{pid}(pid=${order.product.productId})}" th:text="${order.product.name}" ></a>
+                            <a href="#" th:text="'¥'+${order.product.fixedPrice}+'x'+${order.amount}"></a></p>
+                        <p class="fr light" ><a th:href="@{/user/confirmToReceiver/{oid}(oid=${order.orderId})}">确认收货</a><a th:href="@{/user/OrderDetail/{oid}(oid=${order.orderId})}">订单详情</a></p>
+                    </div>
                 </div>
                 <div class="dkuang deng" th:if="${order.status}=='待支付'">
                     <p class="one">待支付</p>
@@ -105,20 +107,18 @@
                             <li th:text="${#dates.format(order.getDateTime(),'yyyy年MM月dd日 HH:mm:ss')}"></li>
                             <li th:text="${order.user.nickName}"></li>
                             <li th:type="'订单号:'+${order.orderId}"></li>
-                            <li th:text="${order.payment}"></li>
+                            <li th:text="${order.payment.payment}"></li>
                         </ul>
-                        <p class="fr">订单金额：<span th:text="${order.totalPrice}"></span>元</p>
+                        <p class="fr">订单金额：<span th:text="${order.totalPrice}*${order.amount}"></span>元</p>
                     </div>
-                    <td th:each="pro:${order.getProductList()}">
-                        <div class="shohou clearfix">
-                            <a th:href="@{/proDetail/{pid}(pid=${pro.productId})}" class="fl">
-                                <img th:src="${pro.picture}"/></a>
-                            <p class="fl">
-                                <a th:href="@{/proDetail/{pid}(pid=${pro.productId})}" th:text="${pro.name}" ></a>
-                                <a href="#" th:text="'¥'+${pro.fixedPrice}+'x'+${pro.o_amount}"></a></p>
-                            <p class="fr" th:if="${proStat.first}"><a href="#">确认收货</a><a href="orderxq.html">订单详情</a></p>
-                        </div>
-                    </td>
+                    <div class="shohou clearfix">
+                        <a th:href="@{/proDetail/{pid}(pid=${order.product.productId})}" class="fl">
+                            <img th:src="${order.product.picture}"/></a>
+                        <p class="fl">
+                            <a th:href="@{/proDetail/{pid}(pid=${order.product.productId})}" th:text="${order.product.name}" ></a>
+                            <a href="#" th:text="'¥'+${order.product.fixedPrice}+'x'+${order.amount}"></a></p>
+                        <p class="fr light" ><a th:href="@{/user/Order/{bid}(bid=${order.boundId})}">立即支付</a><a th:href="@{/user/OrderDetail/{oid}(oid=${order.orderId})}">订单详情</a></p>
+                    </div>
                 </div>
             </tr>
             <div class="fenye clearfix">
