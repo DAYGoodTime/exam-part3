@@ -14,7 +14,7 @@
 
 - com/day/examp3/utils/Cos.java 腾讯云COS的秘钥以及地址等配置
 
-- com/day/examp3/controller/OrderController.java : 273~276行,345~347行 配置微信支付秘钥,同步通知地址,以及支付宝的秘钥等
+- com/day/examp3/controller/OrderController.java : 273-276行,345-347行 配置微信支付秘钥,同步通知地址,以及支付宝的秘钥等
 - 
 - com/day/examp3/utils/DynamicConfigUtil.java :64 需要配置项目的绝对路径
 
